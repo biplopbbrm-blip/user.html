@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EarnNova247 | User Panel</title>
+<style>
+:root {
+  --bg:#0b0d12;
+  --card:#151923;
+  --line:#272d3a;
+  --text:#f5f7fb;
+  --muted:#929bad;
+  --orange:#ff791f;
+  --green:#38d996;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+}
+button{font:inherit;cursor:pointer}
+.app{max-width:900px;margin:auto;padding:20px 16px 95px}
+header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0 24px;
+}
+.brand{font-size:21px;font-weight:800}
+.brand span{color:var(--orange)}
+.pill{
+  background:#202532;border:1px solid var(--line);
+  padding:9px 12px;border-radius:12px;font-size:13px
+}
+.page{display:none}
+.page.active{display:block}
+h1{font-size:27px;margin:10px 0}
+.sub{color:var(--muted);font-size:14px;line-height:1.6}
+.balance{
+  background:linear-gradient(130deg,#ff791f,#e94c18);
+  border-radius:22px;padding:24px;margin:22px 0;
+}
+.balance .label{font-size:13px;opacity:.9}
+.balance .amount{font-size:35px;font-weight:800;margin:10px 0}
+.balance .small{font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{
+  background:var(--card);border:1px solid var(--line);
+  padding:17px;border-radius:17px;min-width:0
+}
+.card .emoji{font-size:25px;margin-bottom:12px}
+.card strong{display:block;font-size:18px;margin-bottom:7px}
+.card p{color:var(--muted);font-size:13px;line-height:1.5;margin:0}
+.section-title{font-size:18px;margin:25px 0 14px}
+.btn{
+  display:inline-block;border:0;border-radius:11px;
+  background:var(--orange);color:white;padding:12px 15px;
+  font-weight:700;text-decoration:none
+}
+.btn.secondary{background:#252b38}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.action{width:100%;margin-top:14px}
+.task,.rank,.history{
+  display:flex;align-items:center;gap:12px;
+  background:var(--card);border:1px solid var(--line);
+  border-radius:15px;padding:15px;margin-bottom:10px
+}
+.task-info,.rank-info{flex:1;min-width:0}
+.task-info strong,.rank-info strong{display:block;font-size:14px}
+.task-info small,.rank-info small{display:block;color:var(--muted);margin-top:6px}
+.reward{color:var(--green);font-weight:800;white-space:nowrap}
+.notice{
+  border:1px solid #4b3a21;background:#211b13;color:#f7c777;
+  padding:14px;border-radius:13px;font-size:13px;line-height:1.6
+}
+input,select{
+  width:100%;padding:13px;margin:8px 0 14px;
+  border:1px solid var(--line);border-radius:10px;
+  background:#0d1119;color:white
+}
+label{font-size:13px;color:var(--muted)}
+.nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:5;
+  background:#11151e;border-top:1px solid var(--line);
+  display:flex;justify-content:center;gap:4px;padding:9px 4px;
+}
+.nav button{
+  flex:1;max-width:125px;background:transparent;color:var(--muted);
+  border:0;padding:9px 2px;border-radius:10px;font-size:11px
+}
+.nav button.active{background:#302015;color:#ff984f}
+.nav span{display:block;font-size:19px;margin-bottom:5px}
+footer{text-align:center;color:var(--muted);font-size:11px;margin-top:28px}
+@media(min-width:650px){
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .app{padding-top:28px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand">Earn<span>Nova</span>247</div>
+  <div class="pill">🪙 <b id="topCoins">0</b></div>
+</header>
+
+<section class="page active" id="home">
+  <p class="sub">YOUR REWARDS DASHBOARD</p>
+  <h1>Welcome to EarnNova247</h1>
+  <p class="sub">Complete eligible activities and track your rewards.</p>
+  <div class="balance">
+    <div class="label">YOUR COIN BALANCE</div>
+    <div class="amount"><span id="mainCoins">0</span> 🪙</div>
+    <div class="small">Available rewards are subject to verification.</div>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="emoji">💰</div><strong id="earned">0 coins</strong><p>Total earned</p></div>
+    <div class="card"><div class="emoji">📋</div><strong id="taskCount">0</strong><p>Tasks completed today</p></div>
+    <div class="card"><div class="emoji">🏆</div><strong id="myRank">—</strong><p>Your ranking</p></div>
+  </div>
+  <h2 class="section-title">Explore EarnNova247</h2>
+  <div class="grid">
+    <div class="card"><div class="emoji">▶️</div><strong>Watch & Earn</strong><p>View available reward activities.</p><button class="btn action" onclick="showPage('watch')">Explore</button></div>
+    <div class="card"><div class="emoji">🎯</div><strong>Daily Tasks</strong><p>Check today's available tasks.</p><button class="btn action" onclick="showPage('tasks')">View Tasks</button></div>
+    <div class="card"><div class="emoji">🥇</div><strong>Leaderboard</strong><p>See the rewards ranking.</p><button class="btn action" onclick="showPage('leaderboard')">View Ranking</button></div>
+  </div>
+</section>
+
+<section class="page" id="watch">
+  <p class="sub">EARN REWARDS</p><h1>Watch & Earn</h1>
+  <p class="sub">Available advertisements will appear here when connected to the database.</p>
+  <div class="notice">🛡️ Rewards must be verified by the server. Simply opening an advertisement does not guarantee a reward.</div>
+  <div id="adList" style="margin-top:16px">
+    <div class="card"><strong>No advertisements loaded</strong><p>The live advertisement database has not been connected yet.</p></div>
+  </div>
+</section>
+
+<section class="page" id="tasks">
+  <p class="sub">DAILY ACTIVITIES</p><h1>Daily Tasks</h1>
+  <p class="sub">Tasks will reset according to the configured daily schedule.</p>
+  <div id="dailyList">
+    <div class="card"><strong>No tasks loaded</strong><p>Daily tasks will appear here after database integration.</p></div>
+  </div>
+</section>
+
+<section class="page" id="leaderboard">
+  <p class="sub">COMMUNITY RANKING</p><h1>Leaderboard</h1>
+  <p class="sub">Rankings will be based on verified earnings.</p>
+  <div class="notice">Your ranking and other users' earnings will appear after the live database is connected.</div>
+  <div id="rankList" style="margin-top:16px"></div>
+</section>
+
+<section class="page" id="wallet">
+  <p class="sub">YOUR REWARDS</p><h1>Coin Wallet</h1>
+  <div class="balance">
+    <div class="label">AVAILABLE COINS</div>
+    <div class="amount"><span id="walletCoins">0</span> 🪙</div>
+    <div class="small">Coin conversion rate is not configured.</div>
+  </div>
+  <h2 class="section-title">Transaction History</h2>
+  <div class="card"><p>Your verified transactions will appear here after database integration.</p></div>
+  <h2 class="section-title">Withdraw</h2>
+  <div class="notice">🔒 Withdrawal is currently unavailable. It will appear only when enabled by the administrator. Requests will require admin approval.</div>
+  <div id="withdrawArea"></div>
+</section>
+
+<footer>EarnNova247 · Rewards subject to eligibility and verification</footer>
+</div>
+
+<nav class="nav">
+  <button class="active" data-page="home" onclick="showPage('home',this)"><span>⌂</span>Home</button>
+  <button data-page="watch" onclick="showPage('watch',this)"><span>▶</span>Watch</button>
+  <button data-page="tasks" onclick="showPage('tasks',this)"><span>✓</span>Tasks</button>
+  <button data-page="leaderboard" onclick="showPage('leaderboard',this)"><span>🏆</span>Ranking</button>
+  <button data-page="wallet" onclick="showPage('wallet',this)"><span>🪙</span>Wallet</button>
+</nav>
+
+<script>
+function showPage(id,button){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  const navButton=button||document.querySelector('.nav button[data-page="'+id+'"]');
+  if(navButton) navButton.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+  </html>
