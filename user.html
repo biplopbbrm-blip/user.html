@@ -5,128 +5,106 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#100c25">
-<title>BG Remover AI</title>
+<meta name="description" content="CB8 Remover AI - Remove image backgrounds with a clean, creator-friendly interface.">
+<title>CB8 Remover AI</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{color-scheme:dark}
 body{
-  font-family:Arial,sans-serif;
-  color:#fff;
-  min-height:100vh;
-  padding:24px 16px 35px;
-  background:
-    radial-gradient(ellipse at 0% 0%,#512da8 0%,transparent 42%),
-    radial-gradient(ellipse at 100% 40%,#075985 0%,transparent 40%),
-    #100c25;
+  font-family:Arial,sans-serif;color:#fff;min-height:100vh;padding:24px 16px 35px;
+  background:radial-gradient(ellipse at 0% 0%,#512da8 0%,transparent 42%),
+  radial-gradient(ellipse at 100% 40%,#075985 0%,transparent 40%),#100c25;
 }
 .app{max-width:460px;margin:auto}
 .header{display:flex;align-items:center;gap:12px;margin-bottom:34px}
 .logo{
-  width:49px;height:49px;display:grid;place-items:center;
-  border-radius:16px;font-size:25px;
-  background:linear-gradient(135deg,#a855f7,#3b82f6);
-  box-shadow:0 8px 25px #7845ff44;
+  width:49px;height:49px;display:grid;place-items:center;border-radius:16px;
+  font-size:25px;background:linear-gradient(135deg,#a855f7,#3b82f6);
+  box-shadow:0 8px 25px #7845ff44
 }
 .brand{font-size:19px;font-weight:800}
 .brand span{color:#b99aff}
 .subtitle{font-size:11px;color:#aaa4c9;margin-top:5px}
 .badge{
-  margin-left:auto;padding:8px 10px;border-radius:30px;
-  border:1px solid #a78bfa55;color:#d9ccff;
-  font-size:10px;white-space:nowrap;background:#ffffff08;
+  margin-left:auto;padding:8px 10px;border-radius:30px;border:1px solid #a78bfa55;
+  color:#d9ccff;font-size:10px;white-space:nowrap;background:#ffffff08
 }
 .hero{margin-bottom:25px}
 h1{font-size:35px;line-height:1.18;letter-spacing:-1px}
 h1 span{
   background:linear-gradient(90deg,#c084fc,#60a5fa);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
+  -webkit-background-clip:text;background-clip:text;color:transparent
 }
 .hero p{color:#bdb7d5;font-size:14px;line-height:1.7;margin-top:13px}
 .card{
   padding:18px;border:1px solid #ffffff20;border-radius:25px;
   background:linear-gradient(145deg,#ffffff12,#ffffff05);
-  box-shadow:0 20px 55px #00000025;
-  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 20px 55px #00000025;backdrop-filter:blur(18px)
 }
 .section-title{font-size:15px;font-weight:700;margin-bottom:15px}
 .upload{
-  min-height:245px;padding:25px 15px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;border:1.5px dashed #9670ff;
-  border-radius:21px;
-  background:linear-gradient(145deg,#8b5cf618,#3b82f610);
-  cursor:pointer;transition:.2s;
+  min-height:245px;padding:25px 15px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  border:1.5px dashed #9670ff;border-radius:21px;
+  background:linear-gradient(145deg,#8b5cf618,#3b82f610);cursor:pointer
 }
 .upload:active{transform:scale(.985)}
 .upload-icon{
   width:70px;height:70px;display:grid;place-items:center;
   border:1px solid #b69aff55;border-radius:22px;
   background:linear-gradient(135deg,#7546d9,#315cc9);
-  box-shadow:0 8px 28px #7546d933;
-  margin-bottom:19px;color:#eee6ff;
+  box-shadow:0 8px 28px #7546d933;margin-bottom:19px;color:#eee6ff
 }
 .upload-title{font-size:18px;font-weight:700}
 .upload-desc{font-size:13px;color:#bdb5d8;margin-top:9px;line-height:1.5}
 .browse-btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
   margin-top:19px;padding:12px 22px;border-radius:12px;
-  border:1px solid #b59aff55;
-  background:linear-gradient(100deg,#8b5cf6,#4778f5);
-  color:white;font-size:14px;font-weight:700;
-  box-shadow:0 7px 20px #7546d933;
+  border:1px solid #b59aff55;background:linear-gradient(100deg,#8b5cf6,#4778f5);
+  color:white;font-size:14px;font-weight:700;box-shadow:0 7px 20px #7546d933
 }
 .browse-btn span{font-size:19px}
 .upload-hint{font-size:11px;color:#aaa2c8;margin-top:16px}
 .upload-hint span{color:#a78bfa;padding:0 4px}
-#photo{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+#photo{position:absolute;width:1px;height:1px;opacity:0}
 #preview{display:none;margin-top:18px}
-.preview-frame{
-  padding:10px;border:1px solid #ffffff18;border-radius:16px;
-  background:#ffffff08;
-}
+.preview-frame{padding:10px;border:1px solid #ffffff18;border-radius:16px;background:#ffffff08}
 #image{
-  display:block;width:100%;max-height:330px;object-fit:contain;
-  border-radius:10px;
+  display:block;width:100%;max-height:330px;object-fit:contain;border-radius:10px;
   background-color:#f1f1f1;
   background-image:linear-gradient(45deg,#ddd 25%,transparent 25%),
   linear-gradient(-45deg,#ddd 25%,transparent 25%),
   linear-gradient(45deg,transparent 75%,#ddd 75%),
   linear-gradient(-45deg,transparent 75%,#ddd 75%);
-  background-size:20px 20px;
-  background-position:0 0,0 10px,10px -10px,-10px 0;
+  background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0
 }
 #filename{font-size:12px;color:#c4b5fd;margin-top:10px;overflow-wrap:anywhere}
 .primary-btn{
-  display:block;width:100%;padding:16px;margin-top:18px;
-  border:0;border-radius:14px;
-  background:linear-gradient(100deg,#9333ea,#3b82f6);
-  color:white;font-size:15px;font-weight:800;
-  box-shadow:0 8px 25px #7545e933;cursor:pointer;
+  display:block;width:100%;padding:16px;margin-top:18px;border:0;border-radius:14px;
+  background:linear-gradient(100deg,#9333ea,#3b82f6);color:white;
+  font-size:15px;font-weight:800;box-shadow:0 8px 25px #7545e933;cursor:pointer
 }
 .primary-btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
-#status{display:none;margin-top:14px;padding:12px;border-radius:12px;
-  background:#ffffff08;color:#d8d0f5;font-size:12px;line-height:1.6;
-  overflow-wrap:anywhere}
-.features{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
-.feature{
-  padding:17px;border-radius:18px;
-  border:1px solid #ffffff15;background:#ffffff08;
+#status{
+  display:none;margin-top:14px;padding:12px;border-radius:12px;
+  background:#ffffff08;color:#d8d0f5;font-size:12px;line-height:1.6;overflow-wrap:anywhere
 }
+.features{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.feature{padding:17px;border-radius:18px;border:1px solid #ffffff15;background:#ffffff08}
 .feature-icon{font-size:23px;margin-bottom:12px}
 .feature h3{font-size:13px}
 .feature p{font-size:11px;color:#aaa5c7;line-height:1.6;margin-top:7px}
 footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
 </style>
 </head>
-
 <body>
 <main class="app">
   <header class="header">
     <div class="logo">✂️</div>
     <div>
-      <div class="brand">BG <span>Remover AI</span></div>
+      <div class="brand">CB8 <span>Remover AI</span></div>
       <div class="subtitle">AI Background Removal Studio</div>
     </div>
     <div class="badge">✦ AI TOOL</div>
@@ -142,9 +120,8 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
 
     <label class="upload" for="photo">
       <div class="upload-icon">
-        <svg viewBox="0 0 24 24" width="34" height="34"
-          fill="none" stroke="currentColor" stroke-width="1.7"
-          stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" width="34" height="34" fill="none"
+          stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="18" height="18" rx="4"/>
           <circle cx="8.5" cy="8.5" r="1.5"/>
           <path d="m21 15-5-5L5 21"/>
@@ -165,9 +142,7 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
       <div id="filename"></div>
     </div>
 
-    <button class="primary-btn" id="remove" disabled>
-      ✨ Remove Background
-    </button>
+    <button class="primary-btn" id="remove" disabled>✨ Remove Background</button>
     <div id="status" role="status" aria-live="polite"></div>
   </section>
 
@@ -180,7 +155,7 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
     <div class="feature">
       <div class="feature-icon">🪄</div>
       <h3>Transparent PNG</h3>
-      <p>Download your image after processing is connected.</p>
+      <p>Save your image after background processing is connected.</p>
     </div>
     <div class="feature">
       <div class="feature-icon">📱</div>
@@ -189,12 +164,12 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
     </div>
     <div class="feature">
       <div class="feature-icon">💜</div>
-      <h3>Premium UI</h3>
-      <p>Modern glass effects with purple and blue colors.</p>
+      <h3>Made by CB8</h3>
+      <p>Modern tools for creators.</p>
     </div>
   </section>
 
-  <footer>BG Remover AI · Made for creators</footer>
+  <footer>© CB8 Remover AI · Made for creators</footer>
 </main>
 
 <script>
@@ -238,7 +213,7 @@ picker.addEventListener("change",()=>{
   filename.textContent=file.name;
   preview.style.display="block";
   button.disabled=false;
-  showStatus("Image selected successfully. Ready for the next step.");
+  showStatus("Image selected successfully. Ready for processing.");
 });
 
 button.addEventListener("click",()=>{
@@ -246,7 +221,7 @@ button.addEventListener("click",()=>{
     showStatus("Please choose an image first.");
     return;
   }
-  showStatus("Your image is ready. Connect the secure background-removal backend to process it.");
+  showStatus("CB8 Remover AI is ready for the next step. Connect the background-removal backend to process images.");
 });
 </script>
 </body>
