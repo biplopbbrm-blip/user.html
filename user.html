@@ -8,89 +8,40 @@
 <meta name="description" content="CB8 Remover AI - Remove image backgrounds with a clean, creator-friendly interface.">
 <title>CB8 Remover AI</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{color-scheme:dark}
-body{
-  font-family:Arial,sans-serif;color:#fff;min-height:100vh;padding:24px 16px 35px;
-  background:radial-gradient(ellipse at 0% 0%,#512da8 0%,transparent 42%),
-  radial-gradient(ellipse at 100% 40%,#075985 0%,transparent 40%),#100c25;
-}
+body{font-family:Arial,sans-serif;color:#fff;min-height:100vh;padding:24px 16px 35px;background:radial-gradient(ellipse at 0% 0%,#512da8 0%,transparent 42%),radial-gradient(ellipse at 100% 40%,#075985 0%,transparent 40%),#100c25}
 .app{max-width:460px;margin:auto}
 .header{display:flex;align-items:center;gap:12px;margin-bottom:34px}
-.logo{
-  width:49px;height:49px;display:grid;place-items:center;border-radius:16px;
-  font-size:25px;background:linear-gradient(135deg,#a855f7,#3b82f6);
-  box-shadow:0 8px 25px #7845ff44
-}
+.logo{width:49px;height:49px;display:grid;place-items:center;border-radius:16px;font-size:25px;background:linear-gradient(135deg,#a855f7,#3b82f6);box-shadow:0 8px 25px #7845ff44}
 .brand{font-size:19px;font-weight:800}
 .brand span{color:#b99aff}
 .subtitle{font-size:11px;color:#aaa4c9;margin-top:5px}
-.badge{
-  margin-left:auto;padding:8px 10px;border-radius:30px;border:1px solid #a78bfa55;
-  color:#d9ccff;font-size:10px;white-space:nowrap;background:#ffffff08
-}
+.badge{margin-left:auto;padding:8px 10px;border-radius:30px;border:1px solid #a78bfa55;color:#d9ccff;font-size:10px;white-space:nowrap;background:#ffffff08}
 .hero{margin-bottom:25px}
 h1{font-size:35px;line-height:1.18;letter-spacing:-1px}
-h1 span{
-  background:linear-gradient(90deg,#c084fc,#60a5fa);
-  -webkit-background-clip:text;background-clip:text;color:transparent
-}
+h1 span{background:linear-gradient(90deg,#c084fc,#60a5fa);-webkit-background-clip:text;background-clip:text;color:transparent}
 .hero p{color:#bdb7d5;font-size:14px;line-height:1.7;margin-top:13px}
-.card{
-  padding:18px;border:1px solid #ffffff20;border-radius:25px;
-  background:linear-gradient(145deg,#ffffff12,#ffffff05);
-  box-shadow:0 20px 55px #00000025;backdrop-filter:blur(18px)
-}
+.card{padding:18px;border:1px solid #ffffff20;border-radius:25px;background:linear-gradient(145deg,#ffffff12,#ffffff05);box-shadow:0 20px 55px #00000025;backdrop-filter:blur(18px)}
 .section-title{font-size:15px;font-weight:700;margin-bottom:15px}
-.upload{
-  min-height:245px;padding:25px 15px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;text-align:center;
-  border:1.5px dashed #9670ff;border-radius:21px;
-  background:linear-gradient(145deg,#8b5cf618,#3b82f610);cursor:pointer
-}
+.upload{min-height:245px;padding:25px 15px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:1.5px dashed #9670ff;border-radius:21px;background:linear-gradient(145deg,#8b5cf618,#3b82f610);cursor:pointer}
 .upload:active{transform:scale(.985)}
-.upload-icon{
-  width:70px;height:70px;display:grid;place-items:center;
-  border:1px solid #b69aff55;border-radius:22px;
-  background:linear-gradient(135deg,#7546d9,#315cc9);
-  box-shadow:0 8px 28px #7546d933;margin-bottom:19px;color:#eee6ff
-}
+.upload-icon{width:70px;height:70px;display:grid;place-items:center;border:1px solid #b69aff55;border-radius:22px;background:linear-gradient(135deg,#7546d9,#315cc9);margin-bottom:19px;color:#eee6ff}
 .upload-title{font-size:18px;font-weight:700}
 .upload-desc{font-size:13px;color:#bdb5d8;margin-top:9px;line-height:1.5}
-.browse-btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  margin-top:19px;padding:12px 22px;border-radius:12px;
-  border:1px solid #b59aff55;background:linear-gradient(100deg,#8b5cf6,#4778f5);
-  color:white;font-size:14px;font-weight:700;box-shadow:0 7px 20px #7546d933
-}
+.browse-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:19px;padding:12px 22px;border-radius:12px;border:1px solid #b59aff55;background:linear-gradient(100deg,#8b5cf6,#4778f5);color:white;font-size:14px;font-weight:700}
 .browse-btn span{font-size:19px}
 .upload-hint{font-size:11px;color:#aaa2c8;margin-top:16px}
 .upload-hint span{color:#a78bfa;padding:0 4px}
 #photo{position:absolute;width:1px;height:1px;opacity:0}
 #preview{display:none;margin-top:18px}
 .preview-frame{padding:10px;border:1px solid #ffffff18;border-radius:16px;background:#ffffff08}
-#image{
-  display:block;width:100%;max-height:330px;object-fit:contain;border-radius:10px;
-  background-color:#f1f1f1;
-  background-image:linear-gradient(45deg,#ddd 25%,transparent 25%),
-  linear-gradient(-45deg,#ddd 25%,transparent 25%),
-  linear-gradient(45deg,transparent 75%,#ddd 75%),
-  linear-gradient(-45deg,transparent 75%,#ddd 75%);
-  background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0
-}
+#image{display:block;width:100%;max-height:330px;object-fit:contain;border-radius:10px;background-color:#f1f1f1;background-image:linear-gradient(45deg,#ddd 25%,transparent 25%),linear-gradient(-45deg,#ddd 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#ddd 75%),linear-gradient(-45deg,transparent 75%,#ddd 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0}
 #filename{font-size:12px;color:#c4b5fd;margin-top:10px;overflow-wrap:anywhere}
-.primary-btn{
-  display:block;width:100%;padding:16px;margin-top:18px;border:0;border-radius:14px;
-  background:linear-gradient(100deg,#9333ea,#3b82f6);color:white;
-  font-size:15px;font-weight:800;box-shadow:0 8px 25px #7545e933;cursor:pointer
-}
+.primary-btn{display:block;width:100%;padding:16px;margin-top:18px;border:0;border-radius:14px;background:linear-gradient(100deg,#9333ea,#3b82f6);color:white;font-size:15px;font-weight:800;box-shadow:0 8px 25px #7545e933;cursor:pointer}
 .primary-btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
-#status{
-  display:none;margin-top:14px;padding:12px;border-radius:12px;
-  background:#ffffff08;color:#d8d0f5;font-size:12px;line-height:1.6;overflow-wrap:anywhere
-}
+#status{display:none;margin-top:14px;padding:12px;border-radius:12px;background:#ffffff08;color:#d8d0f5;font-size:12px;line-height:1.6;overflow-wrap:anywhere}
 .features{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
 .feature{padding:17px;border-radius:18px;border:1px solid #ffffff15;background:#ffffff08}
 .feature-icon{font-size:23px;margin-bottom:12px}
@@ -101,99 +52,71 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
 </head>
 <body>
 <main class="app">
-  <header class="header">
-    <div class="logo">✂️</div>
-    <div>
-      <div class="brand">CB8 <span>Remover AI</span></div>
-      <div class="subtitle">AI Background Removal Studio</div>
-    </div>
-    <div class="badge">✦ AI TOOL</div>
-  </header>
-
-  <section class="hero">
-    <h1>Remove Background.<br><span>Keep the Magic.</span></h1>
-    <p>Turn your ordinary photos into clean, professional images with a transparent background.</p>
-  </section>
-
-  <section class="card">
-    <div class="section-title">Start with your image</div>
-
-    <label class="upload" for="photo">
-      <div class="upload-icon">
-        <svg viewBox="0 0 24 24" width="34" height="34" fill="none"
-          stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="4"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/>
-          <path d="m21 15-5-5L5 21"/>
-        </svg>
-      </div>
-      <strong class="upload-title">Upload Your Image</strong>
-      <p class="upload-desc">Choose a photo from your device</p>
-      <span class="browse-btn"><span>＋</span> Choose Image</span>
-      <small class="upload-hint">JPG, PNG or WEBP <span>·</span> Max 10 MB</small>
-    </label>
-
-    <input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
-
-    <div id="preview">
-      <div class="preview-frame">
-        <img id="image" alt="Selected image preview">
-      </div>
-      <div id="filename"></div>
-    </div>
-
-    <button class="primary-btn" id="remove" disabled>✨ Remove Background</button>
-    <div id="status" role="status" aria-live="polite"></div>
-  </section>
-
-  <section class="features">
-    <div class="feature">
-      <div class="feature-icon">⚡</div>
-      <h3>Simple & Fast</h3>
-      <p>A clean and easy image editing workflow.</p>
-    </div>
-    <div class="feature">
-      <div class="feature-icon">🪄</div>
-      <h3>Transparent PNG</h3>
-      <p>Save your image after background processing is connected.</p>
-    </div>
-    <div class="feature">
-      <div class="feature-icon">📱</div>
-      <h3>Mobile Friendly</h3>
-      <p>Designed for a smooth phone experience.</p>
-    </div>
-    <div class="feature">
-      <div class="feature-icon">💜</div>
-      <h3>Made by CB8</h3>
-      <p>Modern tools for creators.</p>
-    </div>
-  </section>
-
-  <footer>© CB8 Remover AI · Made for creators</footer>
+<header class="header">
+<div class="logo">✂️</div>
+<div><div class="brand">CB8 <span>Remover AI</span></div><div class="subtitle">AI Background Removal Studio</div></div>
+<div class="badge">✦ AI TOOL</div>
+</header>
+<section class="hero">
+<h1>Remove Background.<br><span>Keep the Magic.</span></h1>
+<p>Turn your ordinary photos into clean, professional images with a transparent background.</p>
+</section>
+<section class="card">
+<div class="section-title">Start with your image</div>
+<label class="upload" for="photo">
+<div class="upload-icon">
+<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>
+</svg>
+</div>
+<strong class="upload-title">Upload Your Image</strong>
+<p class="upload-desc">Choose a photo from your device</p>
+<span class="browse-btn"><span>＋</span> Choose Image</span>
+<small class="upload-hint">JPG, PNG or WEBP <span>·</span> Max 10 MB</small>
+</label>
+<input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
+<div id="preview"><div class="preview-frame"><img id="image" alt="Selected image preview"></div><div id="filename"></div></div>
+<button class="primary-btn" id="remove" disabled>✨ Remove Background</button>
+<div id="status" role="status" aria-live="polite"></div>
+</section>
+<section class="features">
+<div class="feature"><div class="feature-icon">⚡</div><h3>Simple & Fast</h3><p>A clean and easy image editing workflow.</p></div>
+<div class="feature"><div class="feature-icon">🪄</div><h3>Transparent PNG</h3><p>Download your processed image as a transparent PNG.</p></div>
+<div class="feature"><div class="feature-icon">📱</div><h3>Mobile Friendly</h3><p>Designed for a smooth phone experience.</p></div>
+<div class="feature"><div class="feature-icon">💜</div><h3>Made by CB8</h3><p>Modern tools for creators.</p></div>
+</section>
+<footer>© CB8 Remover AI · Made for creators</footer>
 </main>
-
 <script>
 if(window.Telegram&&window.Telegram.WebApp){
   window.Telegram.WebApp.ready();
   window.Telegram.WebApp.expand();
 }
 
+const API_URL="https://cb8-remover-backend-1.onrender.com/remove-bg";
 const picker=document.getElementById("photo");
 const preview=document.getElementById("preview");
 const image=document.getElementById("image");
 const filename=document.getElementById("filename");
 const button=document.getElementById("remove");
 const statusBox=document.getElementById("status");
-let file=null,previewURL=null;
+let file=null,previewURL=null,resultURL=null;
 
 function showStatus(message){
   statusBox.style.display="block";
   statusBox.textContent=message;
 }
+function clearResult(){
+  if(resultURL)URL.revokeObjectURL(resultURL);
+  resultURL=null;
+  const oldDownload=document.getElementById("download-result");
+  if(oldDownload)oldDownload.remove();
+}
 
 picker.addEventListener("change",()=>{
   const chosen=picker.files&&picker.files[0];
   if(!chosen)return;
+  clearResult();
 
   if(!["image/jpeg","image/png","image/webp"].includes(chosen.type)){
     file=null;button.disabled=true;
@@ -205,7 +128,6 @@ picker.addEventListener("change",()=>{
     showStatus("Your image must be 10 MB or smaller.");
     return;
   }
-
   file=chosen;
   if(previewURL)URL.revokeObjectURL(previewURL);
   previewURL=URL.createObjectURL(file);
@@ -213,140 +135,57 @@ picker.addEventListener("change",()=>{
   filename.textContent=file.name;
   preview.style.display="block";
   button.disabled=false;
-  showStatus("Image selected successfully. Ready for processing.");
-});
-
-
-<script>
-if (window.Telegram && window.Telegram.WebApp) {
-  window.Telegram.WebApp.ready();
-  window.Telegram.WebApp.expand();
-}
-
-const API_URL = "https://cb8-remover-backend-1.onrender.com/remove-bg";
-const picker = document.getElementById("photo");
-const preview = document.getElementById("preview");
-const image = document.getElementById("image");
-const filename = document.getElementById("filename");
-const button = document.getElementById("remove");
-const statusBox = document.getElementById("status");
-
-let file = null;
-let previewURL = null;
-let resultURL = null;
-
-function showStatus(message) {
-  statusBox.style.display = "block";
-  statusBox.textContent = message;
-}
-
-function clearResult() {
-  if (resultURL) URL.revokeObjectURL(resultURL);
-  resultURL = null;
-
-  const oldDownload = document.getElementById("download-result");
-  if (oldDownload) oldDownload.remove();
-}
-
-picker.addEventListener("change", () => {
-  const chosen = picker.files && picker.files[0];
-  if (!chosen) return;
-
-  clearResult();
-
-  if (!["image/jpeg", "image/png", "image/webp"].includes(chosen.type)) {
-    file = null;
-    button.disabled = true;
-    showStatus("Please select a JPG, PNG or WEBP image.");
-    return;
-  }
-
-  if (chosen.size > 10 * 1024 * 1024) {
-    file = null;
-    button.disabled = true;
-    showStatus("Your image must be 10 MB or smaller.");
-    return;
-  }
-
-  file = chosen;
-
-  if (previewURL) URL.revokeObjectURL(previewURL);
-  previewURL = URL.createObjectURL(file);
-
-  image.src = previewURL;
-  filename.textContent = file.name;
-  preview.style.display = "block";
-  button.disabled = false;
-
   showStatus("Image selected. Ready to remove the background.");
 });
 
-button.addEventListener("click", async () => {
-  if (!file) {
+button.addEventListener("click",async()=>{
+  if(!file){
     showStatus("Please choose an image first.");
     return;
   }
-
   clearResult();
-  button.disabled = true;
-  button.textContent = "⏳ Processing...";
+  button.disabled=true;
+  button.textContent="⏳ Processing...";
   showStatus("Removing background. Please wait...");
 
-  try {
-    const formData = new FormData();
-    formData.append("image", file, file.name);
+  try{
+    const formData=new FormData();
+    formData.append("image",file,file.name);
 
-    const response = await fetch(API_URL, {
-      method: "POST",
-      body: formData
-    });
-
-    if (!response.ok) {
-      let details = "";
-      try {
-        const data = await response.json();
-        details = data.error || data.message || "";
-      } catch (_) {}
-
-      throw new Error(
-        details || "Server error (" + response.status + "). Please try again."
-      );
+    const response=await fetch(API_URL,{method:"POST",body:formData});
+    if(!response.ok){
+      let details="";
+      try{
+        const data=await response.json();
+        details=data.error||data.message||"";
+      }catch(_){}
+      throw new Error(details||"Server error ("+response.status+").");
     }
 
-    const blob = await response.blob();
-
-    if (!blob.type.startsWith("image/")) {
-      throw new Error("The server did not return an image. Check the backend.");
+    const blob=await response.blob();
+    if(!blob.type.startsWith("image/")){
+      throw new Error("Server did not return an image. Check backend configuration.");
     }
 
-    resultURL = URL.createObjectURL(blob);
-    image.src = resultURL;
-    filename.textContent = "Background removed successfully!";
-    
-    const download = document.createElement("a");
-    download.id = "download-result";
-    download.href = resultURL;
-    download.download = "cb8-remover.png";
-    download.textContent = "⬇ Download Transparent PNG";
-    download.style.cssText =
-      "display:block;text-align:center;margin-top:14px;padding:15px;" +
-      "border-radius:12px;background:#16a34a;color:white;" +
-      "font-weight:bold;text-decoration:none;";
+    resultURL=URL.createObjectURL(blob);
+    image.src=resultURL;
+    filename.textContent="Background removed successfully!";
 
-    button.insertAdjacentElement("afterend", download);
-    showStatus("Success! Your image is ready. Tap the green button to download it.");
-  } catch (error) {
-    showStatus(
-      "Could not remove the background: " + error.message +
-      " If the problem continues, check the backend and API key."
-    );
-  } finally {
-    button.disabled = !file;
-    button.textContent = "✨ Remove Background";
+    const download=document.createElement("a");
+    download.id="download-result";
+    download.href=resultURL;
+    download.download="cb8-remover.png";
+    download.textContent="⬇ Download Transparent PNG";
+    download.style.cssText="display:block;text-align:center;margin-top:14px;padding:15px;border-radius:12px;background:#16a34a;color:white;font-weight:bold;text-decoration:none;";
+    button.insertAdjacentElement("afterend",download);
+    showStatus("Success! Tap the green button to download your PNG.");
+  }catch(error){
+    showStatus("Could not remove the background: "+error.message+" If it continues, check the Render backend and API key.");
+  }finally{
+    button.disabled=!file;
+    button.textContent="✨ Remove Background";
   }
 });
-</script>
-
 </script>
 </body>
 </html>
