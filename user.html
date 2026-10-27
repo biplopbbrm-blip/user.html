@@ -3,109 +3,250 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#100c25">
 <title>BG Remover AI</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
+:root{color-scheme:dark}
 body{
-font-family:Arial,sans-serif;color:white;min-height:100vh;
-padding:24px 16px;
-background:radial-gradient(ellipse at top left,#512da8,transparent 50%),
-radial-gradient(ellipse at bottom right,#075985,transparent 50%),#100c25
+  font-family:Arial,sans-serif;
+  color:#fff;
+  min-height:100vh;
+  padding:24px 16px 35px;
+  background:
+    radial-gradient(ellipse at 0% 0%,#512da8 0%,transparent 42%),
+    radial-gradient(ellipse at 100% 40%,#075985 0%,transparent 40%),
+    #100c25;
 }
-.app{max-width:450px;margin:auto}
-.header{display:flex;align-items:center;gap:12px;margin-bottom:35px}
-.logo{padding:14px;border-radius:16px;background:linear-gradient(135deg,#a855f7,#3b82f6);font-size:24px}
-h2{font-size:19px}
-small{color:#b9b4d4}
+.app{max-width:460px;margin:auto}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:34px}
+.logo{
+  width:49px;height:49px;display:grid;place-items:center;
+  border-radius:16px;font-size:25px;
+  background:linear-gradient(135deg,#a855f7,#3b82f6);
+  box-shadow:0 8px 25px #7845ff44;
+}
+.brand{font-size:19px;font-weight:800}
+.brand span{color:#b99aff}
+.subtitle{font-size:11px;color:#aaa4c9;margin-top:5px}
+.badge{
+  margin-left:auto;padding:8px 10px;border-radius:30px;
+  border:1px solid #a78bfa55;color:#d9ccff;
+  font-size:10px;white-space:nowrap;background:#ffffff08;
+}
 .hero{margin-bottom:25px}
-h1{font-size:36px;line-height:1.2}
-h1 span{color:#a78bfa}
-.hero p{color:#c1bbd9;line-height:1.7;margin-top:12px}
-.card{padding:18px;border:1px solid #ffffff25;border-radius:24px;background:#ffffff0c;backdrop-filter:blur(15px)}
-.upload{padding:35px 15px;text-align:center;border:2px dashed #8b5cf6;border-radius:18px;background:#8b5cf610;cursor:pointer}
-.upload .icon{font-size:42px;margin-bottom:15px}
-.upload p{margin-top:10px;color:#c4b5fd}
-input{display:none}
+h1{font-size:35px;line-height:1.18;letter-spacing:-1px}
+h1 span{
+  background:linear-gradient(90deg,#c084fc,#60a5fa);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p{color:#bdb7d5;font-size:14px;line-height:1.7;margin-top:13px}
+.card{
+  padding:18px;border:1px solid #ffffff20;border-radius:25px;
+  background:linear-gradient(145deg,#ffffff12,#ffffff05);
+  box-shadow:0 20px 55px #00000025;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.section-title{font-size:15px;font-weight:700;margin-bottom:15px}
+.upload{
+  min-height:245px;padding:25px 15px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;border:1.5px dashed #9670ff;
+  border-radius:21px;
+  background:linear-gradient(145deg,#8b5cf618,#3b82f610);
+  cursor:pointer;transition:.2s;
+}
+.upload:active{transform:scale(.985)}
+.upload-icon{
+  width:70px;height:70px;display:grid;place-items:center;
+  border:1px solid #b69aff55;border-radius:22px;
+  background:linear-gradient(135deg,#7546d9,#315cc9);
+  box-shadow:0 8px 28px #7546d933;
+  margin-bottom:19px;color:#eee6ff;
+}
+.upload-title{font-size:18px;font-weight:700}
+.upload-desc{font-size:13px;color:#bdb5d8;margin-top:9px;line-height:1.5}
+.browse-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:19px;padding:12px 22px;border-radius:12px;
+  border:1px solid #b59aff55;
+  background:linear-gradient(100deg,#8b5cf6,#4778f5);
+  color:white;font-size:14px;font-weight:700;
+  box-shadow:0 7px 20px #7546d933;
+}
+.browse-btn span{font-size:19px}
+.upload-hint{font-size:11px;color:#aaa2c8;margin-top:16px}
+.upload-hint span{color:#a78bfa;padding:0 4px}
+#photo{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
 #preview{display:none;margin-top:18px}
-#preview img{max-width:100%;max-height:300px;display:block;margin:auto;border-radius:12px}
+.preview-frame{
+  padding:10px;border:1px solid #ffffff18;border-radius:16px;
+  background:#ffffff08;
+}
+#image{
+  display:block;width:100%;max-height:330px;object-fit:contain;
+  border-radius:10px;
+  background-color:#f1f1f1;
+  background-image:linear-gradient(45deg,#ddd 25%,transparent 25%),
+  linear-gradient(-45deg,#ddd 25%,transparent 25%),
+  linear-gradient(45deg,transparent 75%,#ddd 75%),
+  linear-gradient(-45deg,transparent 75%,#ddd 75%);
+  background-size:20px 20px;
+  background-position:0 0,0 10px,10px -10px,-10px 0;
+}
 #filename{font-size:12px;color:#c4b5fd;margin-top:10px;overflow-wrap:anywhere}
-button,.download{display:block;width:100%;padding:16px;margin-top:18px;border:0;border-radius:14px;background:linear-gradient(100deg,#9333ea,#3b82f6);color:white;font-size:15px;font-weight:bold;text-align:center;text-decoration:none;cursor:pointer}
-button:disabled{opacity:.5}
-#status{margin-top:14px;color:#ddd6fe;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.primary-btn{
+  display:block;width:100%;padding:16px;margin-top:18px;
+  border:0;border-radius:14px;
+  background:linear-gradient(100deg,#9333ea,#3b82f6);
+  color:white;font-size:15px;font-weight:800;
+  box-shadow:0 8px 25px #7545e933;cursor:pointer;
+}
+.primary-btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+#status{display:none;margin-top:14px;padding:12px;border-radius:12px;
+  background:#ffffff08;color:#d8d0f5;font-size:12px;line-height:1.6;
+  overflow-wrap:anywhere}
 .features{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
-.feature{padding:17px;border-radius:18px;background:#ffffff0b;border:1px solid #ffffff15}
-.feature p{font-size:12px;color:#b9b4d4;line-height:1.6;margin-top:8px}
-footer{text-align:center;margin-top:28px;color:#9993b7;font-size:12px}
+.feature{
+  padding:17px;border-radius:18px;
+  border:1px solid #ffffff15;background:#ffffff08;
+}
+.feature-icon{font-size:23px;margin-bottom:12px}
+.feature h3{font-size:13px}
+.feature p{font-size:11px;color:#aaa5c7;line-height:1.6;margin-top:7px}
+footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
 </style>
 </head>
+
 <body>
 <main class="app">
-<header class="header">
-<div class="logo">✂️</div>
-<div><h2>BG Remover AI</h2><small>AI Background Studio</small></div>
-</header>
-<section class="hero">
-<h1>Remove Background.<br><span>Keep the Magic.</span></h1>
-<p>Upload your photo and prepare a clean transparent image.</p>
-</section>
-<section class="card">
-<label class="upload" for="photo">
-<div class="icon">☁️</div>
-<strong>Upload Your Image</strong>
-<p>Tap here to browse photos</p>
-<small>JPG, PNG or WEBP · Max 10 MB</small>
-</label>
-<input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
-<div id="preview">
-<img id="image" alt="Selected photo preview">
-<div id="filename"></div>
-</div>
-<button id="remove" disabled>✨ Remove Background</button>
-<div id="status" role="status">Choose an image to get started.</div>
-</section>
-<section class="features">
-<div class="feature"><div>⚡</div><strong>Easy to Use</strong><p>Simple image workflow.</p></div>
-<div class="feature"><div>🪄</div><strong>Transparent PNG</strong><p>Save your processed image.</p></div>
-<div class="feature"><div>📱</div><strong>Mobile Friendly</strong><p>Made for phone screens.</p></div>
-<div class="feature"><div>💜</div><strong>Glass Design</strong><p>Purple and blue interface.</p></div>
-</section>
-<footer>BG Remover AI · Made for creators</footer>
+  <header class="header">
+    <div class="logo">✂️</div>
+    <div>
+      <div class="brand">BG <span>Remover AI</span></div>
+      <div class="subtitle">AI Background Removal Studio</div>
+    </div>
+    <div class="badge">✦ AI TOOL</div>
+  </header>
+
+  <section class="hero">
+    <h1>Remove Background.<br><span>Keep the Magic.</span></h1>
+    <p>Turn your ordinary photos into clean, professional images with a transparent background.</p>
+  </section>
+
+  <section class="card">
+    <div class="section-title">Start with your image</div>
+
+    <label class="upload" for="photo">
+      <div class="upload-icon">
+        <svg viewBox="0 0 24 24" width="34" height="34"
+          fill="none" stroke="currentColor" stroke-width="1.7"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="4"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <path d="m21 15-5-5L5 21"/>
+        </svg>
+      </div>
+      <strong class="upload-title">Upload Your Image</strong>
+      <p class="upload-desc">Choose a photo from your device</p>
+      <span class="browse-btn"><span>＋</span> Choose Image</span>
+      <small class="upload-hint">JPG, PNG or WEBP <span>·</span> Max 10 MB</small>
+    </label>
+
+    <input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
+
+    <div id="preview">
+      <div class="preview-frame">
+        <img id="image" alt="Selected image preview">
+      </div>
+      <div id="filename"></div>
+    </div>
+
+    <button class="primary-btn" id="remove" disabled>
+      ✨ Remove Background
+    </button>
+    <div id="status" role="status" aria-live="polite"></div>
+  </section>
+
+  <section class="features">
+    <div class="feature">
+      <div class="feature-icon">⚡</div>
+      <h3>Simple & Fast</h3>
+      <p>A clean and easy image editing workflow.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🪄</div>
+      <h3>Transparent PNG</h3>
+      <p>Download your image after processing is connected.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">📱</div>
+      <h3>Mobile Friendly</h3>
+      <p>Designed for a smooth phone experience.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">💜</div>
+      <h3>Premium UI</h3>
+      <p>Modern glass effects with purple and blue colors.</p>
+    </div>
+  </section>
+
+  <footer>BG Remover AI · Made for creators</footer>
 </main>
+
 <script>
 if(window.Telegram&&window.Telegram.WebApp){
-window.Telegram.WebApp.ready();
-window.Telegram.WebApp.expand();
+  window.Telegram.WebApp.ready();
+  window.Telegram.WebApp.expand();
 }
+
 const picker=document.getElementById("photo");
 const preview=document.getElementById("preview");
 const image=document.getElementById("image");
 const filename=document.getElementById("filename");
 const button=document.getElementById("remove");
-const status=document.getElementById("status");
+const statusBox=document.getElementById("status");
 let file=null,previewURL=null;
+
+function showStatus(message){
+  statusBox.style.display="block";
+  statusBox.textContent=message;
+}
+
 picker.addEventListener("change",()=>{
-file=picker.files[0];
-if(!file)return;
-if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
-status.textContent="Please choose a JPG, PNG or WEBP image.";
-file=null;button.disabled=true;return;
-}
-if(file.size>10*1024*1024){
-status.textContent="Image must be smaller than 10 MB.";
-file=null;button.disabled=true;return;
-}
-if(previewURL)URL.revokeObjectURL(previewURL);
-previewURL=URL.createObjectURL(file);
-image.src=previewURL;
-filename.textContent=file.name;
-preview.style.display="block";
-button.disabled=false;
-status.textContent="Image selected. Backend connection is the next step.";
+  const chosen=picker.files&&picker.files[0];
+  if(!chosen)return;
+
+  if(!["image/jpeg","image/png","image/webp"].includes(chosen.type)){
+    file=null;button.disabled=true;
+    showStatus("Please select a JPG, PNG or WEBP image.");
+    return;
+  }
+  if(chosen.size>10*1024*1024){
+    file=null;button.disabled=true;
+    showStatus("Your image must be 10 MB or smaller.");
+    return;
+  }
+
+  file=chosen;
+  if(previewURL)URL.revokeObjectURL(previewURL);
+  previewURL=URL.createObjectURL(file);
+  image.src=previewURL;
+  filename.textContent=file.name;
+  preview.style.display="block";
+  button.disabled=false;
+  showStatus("Image selected successfully. Ready for the next step.");
 });
+
 button.addEventListener("click",()=>{
-status.textContent="Your image is selected! Actual background removal will work after we connect the secure backend.";
+  if(!file){
+    showStatus("Please choose an image first.");
+    return;
+  }
+  showStatus("Your image is ready. Connect the secure background-removal backend to process it.");
 });
 </script>
 </body>
