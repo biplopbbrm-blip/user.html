@@ -8,16 +8,10 @@
 <meta name="description" content="CB8 Remover AI background removal tool">
 <title>CB8 Remover AI</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{color-scheme:dark}
-body{
-  font-family:Arial,sans-serif;color:#fff;min-height:100vh;
-  padding:24px 16px 35px;
-  background:radial-gradient(ellipse at 0 0,#512da8,transparent 42%),
-  radial-gradient(ellipse at 100% 40%,#075985,transparent 40%),#100c25
-}
+body{font-family:Arial,sans-serif;color:#fff;min-height:100vh;padding:24px 16px 35px;background:radial-gradient(ellipse at 0 0,#512da8,transparent 42%),radial-gradient(ellipse at 100% 40%,#075985,transparent 40%),#100c25}
 .app{max-width:460px;margin:auto}
 .header{display:flex;align-items:center;gap:12px;margin-bottom:34px}
 .logo{width:49px;height:49px;display:grid;place-items:center;border-radius:16px;font-size:25px;background:linear-gradient(135deg,#a855f7,#3b82f6);flex-shrink:0}
@@ -31,30 +25,17 @@ h1 span{background:linear-gradient(90deg,#c084fc,#60a5fa);-webkit-background-cli
 .hero p{color:#bdb7d5;font-size:14px;line-height:1.7;margin-top:13px}
 .card{padding:18px;border:1px solid #ffffff20;border-radius:25px;background:linear-gradient(145deg,#ffffff12,#ffffff05);box-shadow:0 20px 55px #00000025}
 .section-title{font-size:15px;font-weight:700;margin-bottom:15px}
-.upload{
-  min-height:245px;padding:25px 15px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;text-align:center;
-  border:1.5px dashed #9670ff;border-radius:21px;background:#8b5cf618;
-  cursor:pointer;position:relative
-}
+.upload{min-height:220px;padding:25px 15px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:1.5px dashed #9670ff;border-radius:21px;background:#8b5cf618;cursor:pointer}
 .upload-icon{width:70px;height:70px;display:grid;place-items:center;border-radius:22px;background:linear-gradient(135deg,#7546d9,#315cc9);margin-bottom:19px;font-size:28px}
 .upload-title{font-size:18px;font-weight:700}
 .upload-desc{font-size:13px;color:#bdb5d8;margin-top:9px}
 .browse-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:19px;padding:12px 22px;border-radius:12px;background:linear-gradient(100deg,#8b5cf6,#4778f5);color:white;font-size:14px;font-weight:700}
 .upload-hint{font-size:11px;color:#aaa2c8;margin-top:16px}
 .upload-hint span{color:#a78bfa;padding:0 4px}
-#photo{
-  display:block;width:100%;margin-top:12px;padding:12px;
-  color:#e9e3ff;background:#ffffff0b;border:1px solid #ffffff20;
-  border-radius:12px;font-size:12px
-}
-#photo::file-selector-button{
-  border:0;border-radius:8px;padding:10px;margin-right:10px;
-  background:#7546d9;color:white;font-weight:bold
-}
+#photo{position:absolute;width:1px;height:1px;opacity:0.01}
 #preview{display:none;margin-top:18px}
 .preview-frame{padding:10px;border:1px solid #ffffff18;border-radius:16px;background:#ffffff08}
-#image{display:block;width:100%;max-height:330px;object-fit:contain;border-radius:10px;background-color:#eee}
+#image{display:block;width:100%;max-height:330px;min-height:80px;object-fit:contain;border-radius:10px;background-color:#eee}
 #filename{font-size:12px;color:#c4b5fd;margin-top:10px;overflow-wrap:anywhere}
 .primary-btn{display:block;width:100%;padding:16px;margin-top:18px;border:0;border-radius:14px;background:linear-gradient(100deg,#9333ea,#3b82f6);color:white;font-size:15px;font-weight:800;cursor:pointer}
 .primary-btn:disabled{opacity:.5;cursor:not-allowed}
@@ -68,7 +49,6 @@ h1 span{background:linear-gradient(90deg,#c084fc,#60a5fa);-webkit-background-cli
 footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
 </style>
 </head>
-
 <body>
 <main class="app">
 <header class="header">
@@ -99,7 +79,9 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
   <input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
 
   <div id="preview">
-    <div class="preview-frame"><img id="image" alt="Image preview"></div>
+    <div class="preview-frame">
+      <img id="image" alt="Selected image preview">
+    </div>
     <div id="filename"></div>
   </div>
 
@@ -135,9 +117,10 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
   const download=document.getElementById("download-result");
 
   let file=null;
-  let previewURL=null;
+  let resultBlob=null;
   let resultURL=null;
   let busy=false;
+  let selectionId=0;
 
   function showStatus(message){
     statusBox.style.display="block";
@@ -149,6 +132,7 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
       URL.revokeObjectURL(resultURL);
       resultURL=null;
     }
+    resultBlob=null;
     download.style.display="none";
   }
 
@@ -156,13 +140,13 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
     const chosen=picker.files && picker.files[0];
     if(!chosen)return;
 
+    const currentId=++selectionId;
     clearResult();
 
     const allowed=["image/jpeg","image/png","image/webp"];
     if(!allowed.includes(chosen.type)){
       file=null;
       button.disabled=true;
-      picker.value="";
       showStatus("Please choose a JPG, PNG or WEBP image.");
       return;
     }
@@ -170,41 +154,73 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
     if(chosen.size>10*1024*1024){
       file=null;
       button.disabled=true;
-      picker.value="";
       showStatus("Image must be 10 MB or smaller.");
       return;
     }
 
     file=chosen;
+    button.disabled=true;
+    showStatus("ছবিটি পড়া হচ্ছে, একটু অপেক্ষা করো...");
 
-    if(previewURL)URL.revokeObjectURL(previewURL);
-    previewURL=URL.createObjectURL(chosen);
+    const reader=new FileReader();
 
-    image.src=previewURL;
-    filename.textContent=chosen.name;
-    preview.style.display="block";
-    button.disabled=false;
+    reader.onload=function(event){
+      if(currentId!==selectionId)return;
 
-    showStatus("Image selected. Ready to process.");
+      const dataURL=event.target.result;
+      if(typeof dataURL!=="string"){
+        file=null;
+        button.disabled=true;
+        showStatus("ছবিটি পড়া যায়নি। আবার ছবি বেছে নাও।");
+        return;
+      }
+
+      image.onload=function(){
+        if(currentId!==selectionId)return;
+        preview.style.display="block";
+        filename.textContent=chosen.name;
+        button.disabled=false;
+        showStatus("ছবি নির্বাচন হয়েছে। এখন Remove Background চাপো।");
+      };
+
+      image.onerror=function(){
+        if(currentId!==selectionId)return;
+        file=null;
+        button.disabled=true;
+        showStatus("ছবির প্রিভিউ খোলা যায়নি। JPG বা PNG ছবি দিয়ে চেষ্টা করো।");
+      };
+
+      image.src=dataURL;
+    };
+
+    reader.onerror=function(){
+      if(currentId!==selectionId)return;
+      file=null;
+      button.disabled=true;
+      showStatus("ফোন থেকে ছবিটি পড়া যায়নি। আবার ছবি বেছে নাও।");
+    };
+
+    reader.readAsDataURL(chosen);
   });
 
   button.addEventListener("click",async function(){
     if(busy)return;
 
     if(!file){
-      showStatus("Please choose an image first.");
+      showStatus("আগে Choose Image চাপ দিয়ে একটি ছবি বেছে নাও।");
       return;
     }
 
+    const fileToProcess=file;
     clearResult();
     busy=true;
     button.disabled=true;
     button.textContent="⏳ Processing...";
-    showStatus("Connecting to the background-removal server. Please wait...");
+    showStatus("Background removal চলছে। অপেক্ষা করো...");
 
     try{
       const formData=new FormData();
-      formData.append("image",file,file.name);
+      formData.append("image",fileToProcess,fileToProcess.name);
 
       const response=await fetch(API_URL,{
         method:"POST",
@@ -226,15 +242,33 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
         throw new Error("Server did not return an image. Check backend settings.");
       }
 
+      resultBlob=blob;
       resultURL=URL.createObjectURL(blob);
-      image.src=resultURL;
-      filename.textContent="Background removed successfully!";
-      download.style.display="block";
 
-      showStatus("ছবি তৈরি হয়েছে! সবুজ বাটনে চাপ দিয়ে PNG ডাউনলোড করো।");
+      const reader=new FileReader();
+      reader.onload=function(event){
+        image.onload=function(){
+          filename.textContent="Background removed successfully!";
+          preview.style.display="block";
+          download.style.display="block";
+          showStatus("ছবি তৈরি হয়েছে! সবুজ বাটনে চাপ দিয়ে PNG ডাউনলোড করো।");
+        };
+        image.onerror=function(){
+          showStatus("ছবি তৈরি হয়েছে, কিন্তু প্রিভিউ দেখানো যায়নি। ডাউনলোড চেষ্টা করো।");
+          download.style.display="block";
+        };
+        image.src=event.target.result;
+      };
+      reader.onerror=function(){
+        image.src=resultURL;
+        filename.textContent="Background removed successfully!";
+        download.style.display="block";
+        showStatus("ছবি তৈরি হয়েছে। সবুজ বাটনে চাপ দিয়ে ডাউনলোড করো।");
+      };
+      reader.readAsDataURL(blob);
 
     }catch(error){
-      showStatus("Background removal failed: "+error.message+". Check server availability and backend settings.");
+      showStatus("Background removal failed: "+error.message+". সার্ভার চালু আছে কি না পরীক্ষা করো।");
     }finally{
       busy=false;
       button.disabled=!file;
@@ -243,20 +277,26 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
   });
 
   download.addEventListener("click",function(){
-    if(!resultURL){
-      showStatus("আগে একটি ছবি আপলোড করে Background Remove করো।");
+    if(!resultBlob){
+      showStatus("আগে একটি ছবি আপলোড করে Remove Background করো।");
       return;
     }
 
-    const link=document.createElement("a");
-    link.href=resultURL;
-    link.download="cb8-remover.png";
-    link.style.display="none";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    showStatus("PNG ডাউনলোডের চেষ্টা করা হয়েছে। Telegram-এ কাজ না করলে Chrome-এ চেষ্টা করো।");
+    const reader=new FileReader();
+    reader.onload=function(event){
+      const link=document.createElement("a");
+      link.href=event.target.result;
+      link.download="cb8-remover.png";
+      link.style.display="none";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      showStatus("PNG ডাউনলোডের চেষ্টা করা হয়েছে। কাজ না করলে Chrome-এ Mini App খুলে চেষ্টা করো।");
+    };
+    reader.onerror=function(){
+      showStatus("ডাউনলোডের জন্য ছবিটি প্রস্তুত করা যায়নি। আবার চেষ্টা করো।");
+    };
+    reader.readAsDataURL(resultBlob);
   });
 })();
 </script>
