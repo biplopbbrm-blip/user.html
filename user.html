@@ -1,472 +1,781 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#100c25">
-<meta name="description" content="CB8 Remover AI - AI background removal tool by CB8 EDITZ">
-<title>CB8 Remover AI | CB8 EDITZ</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100c25">
+  <title>CB8 Remover AI</title>
 
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{color-scheme:dark}
-body{
-  font-family:Arial,sans-serif;color:#fff;min-height:100vh;
-  padding:24px 16px 35px;
-  background:radial-gradient(ellipse at 0 0,#512da8,transparent 42%),
-  radial-gradient(ellipse at 100% 40%,#075985,transparent 40%),#100c25
-}
-.app{max-width:460px;margin:auto}
-.header{display:flex;align-items:center;gap:12px;margin-bottom:34px}
-.logo{
-  width:49px;height:49px;display:grid;place-items:center;
-  border-radius:16px;font-size:25px;
-  background:linear-gradient(135deg,#a855f7,#3b82f6);flex-shrink:0
-}
-.brand{font-size:19px;font-weight:800}
-.brand span{color:#b99aff}
-.subtitle{font-size:11px;color:#aaa4c9;margin-top:5px}
-.badge{
-  margin-left:auto;padding:8px 10px;border-radius:30px;
-  border:1px solid #a78bfa55;color:#d9ccff;font-size:10px;white-space:nowrap
-}
-.hero{margin-bottom:25px}
-h1{font-size:35px;line-height:1.18;letter-spacing:-1px}
-h1 span{
-  background:linear-gradient(90deg,#c084fc,#60a5fa);
-  -webkit-background-clip:text;background-clip:text;color:transparent
-}
-.hero p{color:#bdb7d5;font-size:14px;line-height:1.7;margin-top:13px}
-.card{
-  padding:18px;border:1px solid #ffffff20;border-radius:25px;
-  background:linear-gradient(145deg,#ffffff12,#ffffff05);
-  box-shadow:0 20px 55px #00000025
-}
-.section-title{font-size:15px;font-weight:700;margin-bottom:15px}
-.upload{
-  min-height:220px;padding:25px 15px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;text-align:center;
-  border:1.5px dashed #9670ff;border-radius:21px;
-  background:#8b5cf618;cursor:pointer
-}
-.upload-icon{
-  width:70px;height:70px;display:grid;place-items:center;
-  border-radius:22px;background:linear-gradient(135deg,#7546d9,#315cc9);
-  margin-bottom:19px;font-size:28px
-}
-.upload-title{font-size:18px;font-weight:700}
-.upload-desc{font-size:13px;color:#bdb5d8;margin-top:9px}
-.browse-btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  margin-top:19px;padding:12px 22px;border-radius:12px;
-  background:linear-gradient(100deg,#8b5cf6,#4778f5);
-  color:white;font-size:14px;font-weight:700
-}
-.upload-hint{font-size:11px;color:#aaa2c8;margin-top:16px}
-.upload-hint span{color:#a78bfa;padding:0 4px}
-#photo{position:absolute;width:1px;height:1px;opacity:0.01}
-#preview{display:none;margin-top:18px}
-.preview-frame{
-  padding:10px;border:1px solid #ffffff18;border-radius:16px;background:#ffffff08
-}
-#image{
-  display:block;width:100%;max-height:330px;min-height:80px;
-  object-fit:contain;border-radius:10px;background-color:#eee
-}
-#filename{font-size:12px;color:#c4b5fd;margin-top:10px;overflow-wrap:anywhere}
-.primary-btn{
-  display:block;width:100%;padding:16px;margin-top:18px;border:0;
-  border-radius:14px;background:linear-gradient(100deg,#9333ea,#3b82f6);
-  color:white;font-size:15px;font-weight:800;cursor:pointer
-}
-.primary-btn:disabled{opacity:.5;cursor:not-allowed}
-#download-result{
-  display:none;width:100%;margin-top:14px;padding:15px;border:0;
-  border-radius:12px;background:#16a34a;color:white;font-size:16px;
-  font-weight:bold;cursor:pointer
-}
-#download-result:disabled{opacity:.6}
-#status{
-  display:none;margin-top:14px;padding:12px;border-radius:12px;
-  background:#ffffff08;color:#d8d0f5;font-size:12px;
-  line-height:1.6;overflow-wrap:anywhere
-}
-.features{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
-.feature{
-  padding:17px;border-radius:18px;border:1px solid #ffffff15;background:#ffffff08
-}
-.feature-icon{font-size:23px;margin-bottom:12px}
-.feature h3{font-size:13px}
-.feature p{font-size:11px;color:#aaa5c7;line-height:1.6;margin-top:7px}
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-/* Social media section */
-.social-section{
-  margin-top:25px;padding:20px 16px;
-  border:1px solid #ffffff20;border-radius:22px;
-  background:linear-gradient(145deg,#ffffff10,#ffffff04);
-  text-align:center
-}
-.social-title{font-size:18px;font-weight:800}
-.social-desc{font-size:12px;color:#aaa4c9;line-height:1.6;margin-top:8px}
-.social-links{
-  display:flex;flex-direction:column;gap:11px;margin-top:18px
-}
-.social-link{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  width:100%;min-height:48px;padding:13px 15px;
-  border:1px solid #ffffff20;border-radius:13px;
-  color:white;text-decoration:none;font-size:14px;font-weight:700;
-  transition:transform .15s,opacity .15s
-}
-.social-link:active{transform:scale(.98);opacity:.85}
-.social-link.youtube{background:linear-gradient(100deg,#b91c1c,#ef4444)}
-.social-link.tiktok{background:linear-gradient(100deg,#111827,#374151)}
-.social-link.instagram{
-  background:linear-gradient(100deg,#833ab4,#c13584,#f77737)
-}
-.social-icon{font-size:19px}
-footer{
-  text-align:center;margin-top:27px;color:#8983a7;font-size:11px;line-height:1.8
-}
-.footer-brand{color:#c4b5fd;font-weight:800;letter-spacing:1px}
-</style>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, #39205f 0, transparent 38%),
+        linear-gradient(160deg, #100c25, #090914 75%);
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 18px 15px calc(100px + env(safe-area-inset-bottom));
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 8px 0 30px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      font-size: 25px;
+      background: linear-gradient(135deg, #9333ea, #3b82f6);
+      box-shadow: 0 8px 28px #7c3aed35;
+    }
+
+    .brand {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+
+    .brand-sub {
+      margin-top: 5px;
+      font-size: 11px;
+      color: #b9aed9;
+    }
+
+    .hero {
+      margin-bottom: 25px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 7px 11px;
+      border-radius: 30px;
+      border: 1px solid #a78bfa45;
+      background: #8b5cf61a;
+      color: #d6c5ff;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    h1 {
+      font-size: clamp(29px, 8vw, 38px);
+      line-height: 1.15;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, #c084fc, #60a5fa);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .description {
+      color: #b5aecb;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .card {
+      padding: 18px;
+      border: 1px solid #ffffff18;
+      border-radius: 22px;
+      background: linear-gradient(145deg, #ffffff0d, #ffffff05);
+      box-shadow: 0 18px 55px #00000020;
+    }
+
+    .upload-area {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 175px;
+      padding: 20px;
+      border: 1.5px dashed #8b5cf68a;
+      border-radius: 17px;
+      background: #8b5cf60b;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .upload-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    .upload-title {
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .upload-help {
+      color: #a9a1c2;
+      font-size: 12px;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+
+    #photo {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .preview-wrap {
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    .preview-label {
+      color: #c8bce7;
+      font-size: 12px;
+      margin-bottom: 10px;
+      overflow-wrap: anywhere;
+    }
+
+    #image {
+      display: block;
+      width: 100%;
+      max-height: 320px;
+      object-fit: contain;
+      border-radius: 14px;
+      background-color: #ffffff08;
+      background-image:
+        linear-gradient(45deg, #ffffff0b 25%, transparent 25%),
+        linear-gradient(-45deg, #ffffff0b 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #ffffff0b 75%),
+        linear-gradient(-45deg, transparent 75%, #ffffff0b 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      width: 100%;
+      min-height: 49px;
+      padding: 13px 15px;
+      border: 0;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity .2s, transform .2s;
+    }
+
+    .btn:active {
+      transform: scale(.98);
+    }
+
+    .btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: linear-gradient(100deg, #9333ea, #4f46e5, #2563eb);
+      color: #fff;
+      box-shadow: 0 8px 24px #6d28d930;
+    }
+
+    .btn-secondary {
+      background: #ffffff0b;
+      border: 1px solid #ffffff20;
+      color: #fff;
+    }
+
+    .status {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .status.show {
+      display: block;
+    }
+
+    .status.info {
+      color: #dbeafe;
+      background: #2563eb20;
+      border: 1px solid #60a5fa30;
+    }
+
+    .status.success {
+      color: #bbf7d0;
+      background: #16a34a1a;
+      border: 1px solid #4ade8030;
+    }
+
+    .status.error {
+      color: #fecaca;
+      background: #dc26261a;
+      border: 1px solid #f8717130;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+      margin-top: 22px;
+    }
+
+    .feature {
+      padding: 15px 12px;
+      border: 1px solid #ffffff12;
+      border-radius: 16px;
+      background: #ffffff08;
+    }
+
+    .feature-icon {
+      font-size: 23px;
+      margin-bottom: 9px;
+    }
+
+    .feature-title {
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .feature-desc {
+      color: #a9a1c2;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .social-page-title {
+      font-size: 30px;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .social-card {
+      margin-top: 22px;
+      padding: 20px 16px;
+      border: 1px solid #ffffff20;
+      border-radius: 22px;
+      background: linear-gradient(145deg, #ffffff10, #ffffff04);
+      text-align: center;
+    }
+
+    .social-logo {
+      width: 68px;
+      height: 68px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 14px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #9333ea, #3b82f6);
+      font-size: 30px;
+    }
+
+    .social-title {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .social-desc {
+      margin-top: 9px;
+      color: #aaa4c9;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .social-links {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      margin-top: 22px;
+    }
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 49px;
+      padding: 13px 15px;
+      border: 1px solid #ffffff20;
+      border-radius: 14px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 800;
+      transition: transform .15s, opacity .15s;
+    }
+
+    .social-link:active {
+      transform: scale(.98);
+      opacity: .85;
+    }
+
+    .youtube {
+      background: linear-gradient(100deg, #b91c1c, #ef4444);
+    }
+
+    .tiktok {
+      background: linear-gradient(100deg, #111827, #374151);
+    }
+
+    .instagram {
+      background: linear-gradient(100deg, #833ab4, #c13584, #f77737);
+    }
+
+    .social-icon {
+      font-size: 20px;
+    }
+
+    .back-btn {
+      margin-top: 15px;
+    }
+
+    footer {
+      margin: 28px 0 12px;
+      text-align: center;
+      color: #8f87aa;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
+    .footer-brand {
+      color: #c4b5fd;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      margin-top: 4px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      display: flex;
+      gap: 10px;
+      padding: 11px 15px calc(11px + env(safe-area-inset-bottom));
+      background: #100c25f5;
+      border-top: 1px solid #ffffff20;
+      backdrop-filter: blur(15px);
+    }
+
+    .bottom-nav button {
+      flex: 1;
+      max-width: 480px;
+      min-height: 48px;
+      margin: 0 auto;
+      border: 1px solid #ffffff20;
+      border-radius: 14px;
+      background: #24203a;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .bottom-nav button.active {
+      background: linear-gradient(100deg, #9333ea, #3b82f6);
+      border-color: transparent;
+      box-shadow: 0 5px 18px #7c3aed30;
+    }
+
+    .bottom-nav button:active {
+      transform: scale(.98);
+    }
+
+    @media (min-width: 600px) {
+      body {
+        padding-top: 30px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-<main class="app">
+  <div class="container">
 
-<header class="header">
-  <div class="logo">✂️</div>
-  <div>
-    <div class="brand">CB8 <span>Remover AI</span></div>
-    <div class="subtitle">AI Background Removal Studio</div>
+    <!-- HOME PAGE -->
+    <section id="home-view">
+      <header class="header">
+        <div class="logo">✂️</div>
+        <div>
+          <div class="brand">CB8 Remover AI</div>
+          <div class="brand-sub">AI BACKGROUND REMOVER</div>
+        </div>
+      </header>
+
+      <div class="hero">
+        <div class="tag">✦ AI POWERED TOOL</div>
+        <h1>Remove Background.<br><span class="gradient-text">Keep the Magic.</span></h1>
+        <p class="description">
+          Remove image backgrounds in a few simple steps.
+          Upload your photo and download your result.
+        </p>
+      </div>
+
+      <main class="card">
+        <label class="upload-area" for="photo">
+          <div class="upload-icon">🖼️</div>
+          <div class="upload-title">Upload Your Image</div>
+          <div class="upload-help">
+            Tap here to choose a photo<br>
+            PNG, JPG or WEBP
+          </div>
+          <input id="photo" type="file" accept="image/png,image/jpeg,image/webp">
+        </label>
+
+        <div class="preview-wrap" id="preview-wrap" hidden>
+          <div class="preview-label" id="filename"></div>
+          <img id="image" alt="Selected image preview">
+        </div>
+
+        <div class="buttons">
+          <button class="btn btn-primary" id="remove" type="button" disabled>
+            ✨ Remove Background
+          </button>
+
+          <button class="btn btn-secondary" id="download-result" type="button" disabled>
+            ⬇️ Download Result
+          </button>
+        </div>
+
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+      </main>
+
+      <section class="features">
+        <div class="feature">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-title">Fast Processing</div>
+          <div class="feature-desc">Remove backgrounds in a few simple steps.</div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🪄</div>
+          <div class="feature-title">AI Powered</div>
+          <div class="feature-desc">Let AI handle the background removal.</div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">📥</div>
+          <div class="feature-title">Easy Download</div>
+          <div class="feature-desc">Download your processed image.</div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">📱</div>
+          <div class="feature-title">Mobile Friendly</div>
+          <div class="feature-desc">Designed for phones and desktop screens.</div>
+        </div>
+      </section>
+    </section>
+
+    <!-- SOCIAL MEDIA PAGE -->
+    <section id="social-view" hidden>
+      <header class="header">
+        <div class="logo">✂️</div>
+        <div>
+          <div class="brand">CB8 Remover AI</div>
+          <div class="brand-sub">CONNECT WITH CB8 EDITZ</div>
+        </div>
+      </header>
+
+      <div class="hero">
+        <div class="tag">✦ LET'S CONNECT</div>
+        <h1 class="social-page-title">My <span class="gradient-text">Social Links</span></h1>
+        <p class="description">
+          Follow CB8 EDITZ for more edits, videos and updates.
+          Choose a platform below.
+        </p>
+      </div>
+
+      <section class="social-card">
+        <div class="social-logo">✂️</div>
+        <div class="social-title">CB8 EDITZ</div>
+        <p class="social-desc">
+          Thanks for visiting! Follow my official social media profiles.
+        </p>
+
+        <div class="social-links">
+          <a class="social-link youtube"
+             href="https://youtube.com/@cb8_editz?si=69zO79JoM6auDJqq"
+             target="_blank" rel="noopener noreferrer">
+            <span class="social-icon">▶</span>
+            <span>YouTube Channel</span>
+          </a>
+
+          <a class="social-link tiktok"
+             href="https://www.tiktok.com/@cb8_editz?_r=1&amp;_t=ZS-9AvQ34aGqLl"
+             target="_blank" rel="noopener noreferrer">
+            <span class="social-icon">♪</span>
+            <span>TikTok Profile</span>
+          </a>
+
+          <a class="social-link instagram"
+             href="https://www.instagram.com/cb8_editz?xtok=MTBqd3QxZ240MGVhaw=="
+             target="_blank" rel="noopener noreferrer">
+            <span class="social-icon">◎</span>
+            <span>Instagram Profile</span>
+          </a>
+        </div>
+
+        <button class="btn btn-secondary back-btn" id="back-home" type="button">
+          ← Back to Home
+        </button>
+      </section>
+    </section>
+
+    <footer>
+      <div>© CB8 Remover AI</div>
+      <div class="footer-brand">MADE BY CB8 EDITZ</div>
+    </footer>
   </div>
-  <div class="badge">✦ AI TOOL</div>
-</header>
 
-<section class="hero">
-  <h1>Remove Background.<br><span>Keep the Magic.</span></h1>
-  <p>Turn your ordinary photos into clean, professional images with a transparent background.</p>
-</section>
+  <!-- FIXED BOTTOM NAVIGATION -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button id="home-tab" class="active" type="button">⌂ Home</button>
+    <button id="social-tab" type="button">♧ Social Media</button>
+  </nav>
 
-<section class="card">
-  <div class="section-title">Start with your image</div>
+  <script>
+    (function () {
+      "use strict";
 
-  <label class="upload" for="photo">
-    <div class="upload-icon">🖼️</div>
-    <strong class="upload-title">Upload Your Image</strong>
-    <p class="upload-desc">Choose a photo from your device</p>
-    <span class="browse-btn">＋ Choose Image</span>
-    <small class="upload-hint">JPG, PNG or WEBP <span>·</span> Max 10 MB</small>
-  </label>
+      const tg = window.Telegram && window.Telegram.WebApp
+        ? window.Telegram.WebApp
+        : null;
 
-  <input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
-
-  <div id="preview">
-    <div class="preview-frame">
-      <img id="image" alt="Image preview">
-    </div>
-    <div id="filename"></div>
-  </div>
-
-  <button class="primary-btn" id="remove" disabled>✨ Remove Background</button>
-  <button id="download-result" type="button">⬇ Download Transparent PNG</button>
-  <div id="status" role="status" aria-live="polite"></div>
-</section>
-
-<section class="features">
-  <div class="feature">
-    <div class="feature-icon">⚡</div>
-    <h3>Simple & Fast</h3>
-    <p>A clean and easy image editing workflow.</p>
-  </div>
-  <div class="feature">
-    <div class="feature-icon">🪄</div>
-    <h3>Transparent PNG</h3>
-    <p>Download your processed transparent image.</p>
-  </div>
-  <div class="feature">
-    <div class="feature-icon">📱</div>
-    <h3>Mobile Friendly</h3>
-    <p>Designed for a smooth phone experience.</p>
-  </div>
-  <div class="feature">
-    <div class="feature-icon">💜</div>
-    <h3>Made by CB8</h3>
-    <p>Modern tools for creators.</p>
-  </div>
-</section>
-
-<!-- Social media links -->
-<section class="social-section">
-  <div class="social-title">Follow CB8 EDITZ</div>
-  <p class="social-desc">Follow me on social media for more edits, videos and updates.</p>
-
-  <div class="social-links">
-    <a class="social-link youtube"
-       href="https://youtube.com/@cb8_editz?si=69zO79JoM6auDJqq"
-       target="_blank" rel="noopener noreferrer">
-      <span class="social-icon">▶</span>
-      <span>YouTube · CB8 EDITZ</span>
-    </a>
-
-    <a class="social-link tiktok"
-       href="https://www.tiktok.com/@cb8_editz?_r=1&amp;_t=ZS-9AvQ34aGqLl"
-       target="_blank" rel="noopener noreferrer">
-      <span class="social-icon">♪</span>
-      <span>TikTok · @cb8_editz</span>
-    </a>
-
-    <a class="social-link instagram"
-       href="https://www.instagram.com/cb8_editz?xtok=MTBqd3QxZ240MGVhaw=="
-       target="_blank" rel="noopener noreferrer">
-      <span class="social-icon">◎</span>
-      <span>Instagram · @cb8_editz</span>
-    </a>
-  </div>
-</section>
-
-<footer>
-  <div>© CB8 Remover AI</div>
-  <div class="footer-brand">MADE BY CB8 EDITZ</div>
-</footer>
-
-</main>
-
-<script>
-(function(){
-  const tg = window.Telegram && window.Telegram.WebApp
-    ? window.Telegram.WebApp : null;
-
-  if(tg){
-    tg.ready();
-    tg.expand();
-  }
-
-  const API_URL = "https://cb8-remover-backend-1.onrender.com/remove-bg";
-  const picker = document.getElementById("photo");
-  const preview = document.getElementById("preview");
-  const image = document.getElementById("image");
-  const filename = document.getElementById("filename");
-  const button = document.getElementById("remove");
-  const statusBox = document.getElementById("status");
-  const download = document.getElementById("download-result");
-
-  let file = null;
-  let downloadURL = null;
-  let previewURL = null;
-  let busy = false;
-  let selectionId = 0;
-
-  function showStatus(message){
-    statusBox.style.display = "block";
-    statusBox.textContent = message;
-  }
-
-  function clearResult(){
-    downloadURL = null;
-    previewURL = null;
-    download.style.display = "none";
-    download.disabled = false;
-  }
-
-  picker.addEventListener("change",function(){
-    const chosen = picker.files && picker.files[0];
-    if(!chosen) return;
-
-    const currentId = ++selectionId;
-    clearResult();
-
-    const allowed = ["image/jpeg","image/png","image/webp"];
-
-    if(!allowed.includes(chosen.type)){
-      file = null;
-      button.disabled = true;
-      showStatus("Please choose a JPG, PNG or WEBP image.");
-      return;
-    }
-
-    if(chosen.size > 10 * 1024 * 1024){
-      file = null;
-      button.disabled = true;
-      showStatus("Image must be 10 MB or smaller.");
-      return;
-    }
-
-    file = chosen;
-    button.disabled = true;
-    showStatus("ছবিটি পড়া হচ্ছে, একটু অপেক্ষা করো...");
-
-    const reader = new FileReader();
-
-    reader.onload = function(event){
-      if(currentId !== selectionId) return;
-
-      const dataURL = event.target.result;
-
-      if(typeof dataURL !== "string"){
-        file = null;
-        button.disabled = true;
-        showStatus("ছবিটি পড়া যায়নি। আবার ছবি বেছে নাও।");
-        return;
+      if (tg) {
+        tg.ready();
+        tg.expand();
       }
 
-      image.onload = function(){
-        if(currentId !== selectionId) return;
-        preview.style.display = "block";
-        filename.textContent = chosen.name;
-        button.disabled = false;
-        showStatus("ছবি নির্বাচন হয়েছে। এখন Remove Background চাপো।");
-      };
+      // Existing background-removal backend
+      const API_URL = "https://cb8-remover-backend-1.onrender.com/remove-bg";
 
-      image.onerror = function(){
-        if(currentId !== selectionId) return;
-        file = null;
-        button.disabled = true;
-        showStatus("ছবির প্রিভিউ খোলা যায়নি। অন্য ছবি দিয়ে চেষ্টা করো।");
-      };
+      const photoInput = document.getElementById("photo");
+      const previewWrap = document.getElementById("preview-wrap");
+      const image = document.getElementById("image");
+      const filename = document.getElementById("filename");
+      const removeButton = document.getElementById("remove");
+      const downloadButton = document.getElementById("download-result");
+      const statusBox = document.getElementById("status");
 
-      image.src = dataURL;
-    };
+      const homeView = document.getElementById("home-view");
+      const socialView = document.getElementById("social-view");
+      const homeTab = document.getElementById("home-tab");
+      const socialTab = document.getElementById("social-tab");
+      const backHome = document.getElementById("back-home");
 
-    reader.onerror = function(){
-      if(currentId !== selectionId) return;
-      file = null;
-      button.disabled = true;
-      showStatus("ফোন থেকে ছবিটি পড়া যায়নি। আবার ছবি বেছে নাও।");
-    };
+      let selectedFile = null;
+      let downloadURL = "";
+      let previewURL = "";
+      let busy = false;
+      let selectionId = 0;
 
-    reader.readAsDataURL(chosen);
-  });
+      function setStatus(message, type) {
+        statusBox.textContent = message;
+        statusBox.className = "status show " + (type || "info");
+      }
 
-  button.addEventListener("click",async function(){
-    if(busy) return;
+      function clearStatus() {
+        statusBox.textContent = "";
+        statusBox.className = "status";
+      }
 
-    if(!file){
-      showStatus("আগে Choose Image চাপ দিয়ে একটি ছবি বেছে নাও।");
-      return;
-    }
+      function setPage(page) {
+        const showSocial = page === "social";
 
-    const fileToProcess = file;
-    clearResult();
+        homeView.hidden = showSocial;
+        socialView.hidden = !showSocial;
 
-    busy = true;
-    button.disabled = true;
-    button.textContent = "⏳ Processing...";
-    showStatus("Background removal চলছে। অপেক্ষা করো...");
+        homeTab.classList.toggle("active", !showSocial);
+        socialTab.classList.toggle("active", showSocial);
 
-    try{
-      const formData = new FormData();
-      formData.append("image",fileToProcess,fileToProcess.name);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
 
-      const response = await fetch(API_URL,{
-        method:"POST",
-        body:formData
+      homeTab.addEventListener("click", function () {
+        setPage("home");
       });
 
-      let data;
+      socialTab.addEventListener("click", function () {
+        setPage("social");
+      });
 
-      try{
-        data = await response.json();
-      }catch(e){
-        throw new Error("সার্ভার থেকে সঠিক উত্তর আসেনি। Backend deploy পরীক্ষা করো।");
-      }
+      backHome.addEventListener("click", function () {
+        setPage("home");
+      });
 
-      if(!response.ok){
-        throw new Error(data.error || data.message || ("Server error " + response.status));
-      }
+      photoInput.addEventListener("change", function () {
+        const file = photoInput.files && photoInput.files[0];
+        selectionId++;
 
-      if(!data.success || !data.download_url || !data.preview_url){
-        throw new Error(data.error || "ডাউনলোড লিংক তৈরি হয়নি।");
-      }
+        if (!file) return;
 
-      downloadURL = data.download_url;
-      previewURL = data.preview_url;
+        if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+          selectedFile = null;
+          downloadURL = "";
+          previewURL = "";
+          removeButton.disabled = true;
+          downloadButton.disabled = true;
+          previewWrap.hidden = true;
+          setStatus("Please choose a PNG, JPG or WEBP image.", "error");
+          photoInput.value = "";
+          return;
+        }
 
-      image.onload = function(){
-        preview.style.display = "block";
-        filename.textContent = "Background removed successfully!";
-        download.style.display = "block";
-        download.disabled = false;
-        showStatus("ছবি তৈরি হয়েছে! সবুজ বাটনে চাপ দিয়ে PNG ডাউনলোড করো।");
-      };
+        if (file.size > 15 * 1024 * 1024) {
+          selectedFile = null;
+          downloadURL = "";
+          previewURL = "";
+          removeButton.disabled = true;
+          downloadButton.disabled = true;
+          previewWrap.hidden = true;
+          setStatus("This image is too large. Please choose an image under 15 MB.", "error");
+          photoInput.value = "";
+          return;
+        }
 
-      image.onerror = function(){
-        preview.style.display = "block";
-        filename.textContent = "Background removed successfully!";
-        download.style.display = "block";
-        download.disabled = false;
-        showStatus("ছবি তৈরি হয়েছে, কিন্তু প্রিভিউ দেখা যাচ্ছে না। ডাউনলোড চেষ্টা করো।");
-      };
+        selectedFile = file;
+        downloadURL = "";
+        previewURL = "";
+        removeButton.disabled = false;
+        downloadButton.disabled = true;
+        removeButton.textContent = "✨ Remove Background";
+        previewWrap.hidden = false;
+        filename.textContent = file.name;
+        image.src = URL.createObjectURL(file);
+        clearStatus();
+      });
 
-      image.src = previewURL;
+      removeButton.addEventListener("click", async function () {
+        if (!selectedFile || busy) return;
 
-    }catch(error){
-      clearResult();
-      showStatus("Background removal failed: " + error.message);
-    }finally{
-      busy = false;
-      button.disabled = !file;
-      button.textContent = "✨ Remove Background";
-    }
-  });
+        busy = true;
+        const currentSelection = selectionId;
+        removeButton.disabled = true;
+        downloadButton.disabled = true;
+        removeButton.textContent = "⏳ Processing...";
+        setStatus("Removing the background. Please wait...", "info");
 
-  download.addEventListener("click",function(){
-    if(!downloadURL){
-      showStatus("আগে একটি ছবি আপলোড করে Remove Background করো।");
-      return;
-    }
+        try {
+          const formData = new FormData();
+          formData.append("image", selectedFile);
 
-    const fileName = "cb8-remover.png";
+          const response = await fetch(API_URL, {
+            method: "POST",
+            body: formData
+          });
 
-    if(tg && typeof tg.downloadFile === "function"){
-      try{
-        download.disabled = true;
-        showStatus("Telegram-এর ডাউনলোড ব্যবস্থা চালু হচ্ছে...");
-
-        tg.downloadFile({
-          url: downloadURL,
-          file_name: fileName
-        },function(status){
-          download.disabled = false;
-
-          if(status === "downloading"){
-            showStatus("ডাউনলোড শুরু হয়েছে। ফোনের Downloads ফোল্ডারে ফাইলটি দেখো।");
-          }else if(status === "cancelled"){
-            showStatus("ডাউনলোড বাতিল করা হয়েছে। আবার চেষ্টা করতে পারো।");
-          }else{
-            showStatus("ডাউনলোডের অবস্থা নিশ্চিত করা যায়নি। আবার চেষ্টা করো।");
+          let data;
+          try {
+            data = await response.json();
+          } catch (_) {
+            throw new Error("The server returned an invalid response. Please try again.");
           }
-        });
 
-        return;
-      }catch(error){
-        download.disabled = false;
-        showStatus("Telegram-এর ডাউনলোড চালু হয়নি। সরাসরি লিংক খুলে চেষ্টা করছি...");
-      }
-    }
+          if (!response.ok || !data.success || !data.download_url) {
+            throw new Error(
+              data.error || data.message || "Background removal failed. Please try again."
+            );
+          }
 
-    const link = document.createElement("a");
-    link.href = downloadURL;
-    link.download = fileName;
-    link.target = "_blank";
-    link.rel = "noopener";
-    document.body.appendChild(link);
+          if (currentSelection !== selectionId) return;
 
-    try{
-      link.click();
-      showStatus("ডাউনলোড লিংক খোলা হয়েছে। ডাউনলোড শুরু না হলে খোলা পেজে ফাইলটি সেভ করো।");
-    }catch(error){
-      showStatus("ডাউনলোড শুরু করা যায়নি। আবার চেষ্টা করো।");
-    }
+          downloadURL = data.download_url;
+          previewURL = data.preview_url || data.download_url + "?view=1";
 
-    setTimeout(function(){
-      link.remove();
-    },2000);
-  });
-})();
-</script>
+          image.src = previewURL;
+          downloadButton.disabled = false;
+          setStatus("Background removed successfully! Your image is ready to download.", "success");
+
+        } catch (error) {
+          if (currentSelection === selectionId) {
+            setStatus(
+              error.message || "Something went wrong. Please try again.",
+              "error"
+            );
+          }
+        } finally {
+          busy = false;
+          removeButton.disabled = !selectedFile;
+          removeButton.textContent = "✨ Remove Background";
+        }
+      });
+
+      downloadButton.addEventListener("click", function () {
+        if (!downloadURL) return;
+
+        if (tg && typeof tg.downloadFile === "function") {
+          try {
+            tg.downloadFile({
+              url: downloadURL,
+              file_name: "cb8-remover.png"
+            });
+            setStatus("Your download has been requested.", "success");
+            return;
+          } catch (_) {
+            // Continue to the browser download fallback.
+          }
+        }
+
+        const link = document.createElement("a");
+        link.href = downloadURL;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.download = "cb8-remover.png";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setStatus(
+          "Download started. If the image opens in a new page, use your browser's download option.",
+          "success"
+        );
+      });
+    })();
+  </script>
 </body>
 </html>
