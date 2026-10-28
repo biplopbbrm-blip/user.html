@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -246,6 +245,7 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
       resultURL=URL.createObjectURL(blob);
 
       const reader=new FileReader();
+
       reader.onload=function(event){
         image.onload=function(){
           filename.textContent="Background removed successfully!";
@@ -253,18 +253,22 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
           download.style.display="block";
           showStatus("ছবি তৈরি হয়েছে! সবুজ বাটনে চাপ দিয়ে PNG ডাউনলোড করো।");
         };
+
         image.onerror=function(){
           showStatus("ছবি তৈরি হয়েছে, কিন্তু প্রিভিউ দেখানো যায়নি। ডাউনলোড চেষ্টা করো।");
           download.style.display="block";
         };
+
         image.src=event.target.result;
       };
+
       reader.onerror=function(){
         image.src=resultURL;
         filename.textContent="Background removed successfully!";
         download.style.display="block";
         showStatus("ছবি তৈরি হয়েছে। সবুজ বাটনে চাপ দিয়ে ডাউনলোড করো।");
       };
+
       reader.readAsDataURL(blob);
 
     }catch(error){
@@ -276,27 +280,48 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
     }
   });
 
+  // Download: save the actual image blob, not a data URL.
   download.addEventListener("click",function(){
     if(!resultBlob){
       showStatus("আগে একটি ছবি আপলোড করে Remove Background করো।");
       return;
     }
 
-    const reader=new FileReader();
-    reader.onload=function(event){
-      const link=document.createElement("a");
-      link.href=event.target.result;
-      link.download="cb8-remover.png";
-      link.style.display="none";
-      document.body.appendChild(link);
+    const pngBlob=resultBlob;
+    const fileName="cb8-remover.png";
+
+    // Ensure the downloaded file has a PNG MIME type.
+    const saveBlob = pngBlob.type==="image/png"
+      ? pngBlob
+      : new Blob([pngBlob],{type:"image/png"});
+
+    const objectURL=URL.createObjectURL(saveBlob);
+    const link=document.createElement("a");
+
+    link.href=objectURL;
+    link.download=fileName;
+    link.setAttribute("type","application/octet-stream");
+    link.style.position="fixed";
+    link.style.left="-9999px";
+
+    document.body.appendChild(link);
+
+    try{
       link.click();
+      showStatus(
+        "ডাউনলোডের অনুরোধ পাঠানো হয়েছে। ফাইলটি ফোনের Downloads ফোল্ডারে আছে কি না দেখো। " +
+        "Telegram-এর ভেতরে ডাউনলোড না হলে এই পেজটি Chrome-এ খুলে আবার চেষ্টা করো।"
+      );
+    }catch(error){
+      showStatus(
+        "ডাউনলোড শুরু করা যায়নি। Chrome-এ পেজটি খুলে আবার চেষ্টা করো।"
+      );
+    }
+
+    setTimeout(function(){
       link.remove();
-      showStatus("PNG ডাউনলোডের চেষ্টা করা হয়েছে। কাজ না করলে Chrome-এ Mini App খুলে চেষ্টা করো।");
-    };
-    reader.onerror=function(){
-      showStatus("ডাউনলোডের জন্য ছবিটি প্রস্তুত করা যায়নি। আবার চেষ্টা করো।");
-    };
-    reader.readAsDataURL(resultBlob);
+      URL.revokeObjectURL(objectURL);
+    },60000);
   });
 })();
 </script>
