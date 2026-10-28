@@ -190,6 +190,7 @@ button.addEventListener("click",async()=>{
     filename.textContent="Background removed successfully!";
 
     
+
 const download = document.createElement("a");
 download.id = "download-result";
 download.href = resultURL;
@@ -198,38 +199,34 @@ download.textContent = "⬇ Download Transparent PNG";
 download.style.cssText = "display:block;text-align:center;margin-top:14px;padding:15px;border-radius:12px;background:#16a34a;color:white;font-weight:bold;text-decoration:none;";
 
 download.addEventListener("click", async function (event) {
-  if (window.Telegram && window.Telegram.WebApp) {
-    event.preventDefault();
+  event.preventDefault();
 
-    try {
-      const response = await fetch(resultURL);
-      const blob = await response.blob();
-      const reader = new FileReader();
+  try {
+    const response = await fetch(resultURL);
+    if (!response.ok) throw new Error("Could not load image");
 
-      reader.onloadend = function () {
-        const base64 = reader.result;
+    const blob = await response.blob();
+    const blobURL = URL.createObjectURL(blob);
 
-        const win = window.open();
-        if (win) {
-          win.document.write(
-            '<img src="' + base64 +
-            '" style="max-width:100%;height:auto;">'
-          );
-          win.document.title = "CB8 Remover AI - PNG";
-        } else {
-          showStatus("ছবি তৈরি হয়েছে। ছবির ওপর চেপে ধরে Save image চেষ্টা করো।");
-        }
-      };
+    const link = document.createElement("a");
+    link.href = blobURL;
+    link.download = "cb8-remover.png";
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
 
-      reader.readAsDataURL(blob);
-    } catch (error) {
-      showStatus("ছবি তৈরি হয়েছে, কিন্তু খোলার সময় সমস্যা হয়েছে।");
-    }
+    showStatus("ছবিটি তৈরি হয়েছে। ডাউনলোড না হলে ছবিটি নতুন ট্যাবে খোলার চেষ্টা করো।");
+
+    setTimeout(() => URL.revokeObjectURL(blobURL), 60000);
+  } catch (error) {
+    showStatus("ডাউনলোড ব্যর্থ হয়েছে। ছবিটি আবার তৈরি করে চেষ্টা করো।");
   }
 });
 
 button.insertAdjacentElement("afterend", download);
-showStatus("Success! Tap the green button to open your PNG.");
+showStatus("Success! Tap the green button to download your PNG.");
+
 
   }catch(error){
     showStatus("Background removal failed: "+error.message+". Check the Render service and API key. If the message mentions Failed to fetch, check server CORS or availability.");
