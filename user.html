@@ -193,99 +193,52 @@ filename.textContent = "Background removed successfully!";
 const oldDownload = document.getElementById("download-result");
 if (oldDownload) oldDownload.remove();
 
-// Create download button
-const download = document.createElement("button");
-download.id = "download-result";
-download.type = "button";
-download.textContent = "⬇ Download Transparent PNG";
 
-download.style.cssText = `
-  display: block;
-  width: 100%;
-  margin-top: 14px;
-  padding: 15px;
-  border: none;
-  border-radius: 12px;
-  background: #16a34a;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-`;
+    // Create direct download button
+    const download = document.createElement("button");
+    download.id = "download-result";
+    download.type = "button";
+    download.textContent = "⬇ Download Transparent PNG";
 
-download.addEventListener("click", async function () {
-  try {
-    showStatus("ছবি ডাউনলোড করার চেষ্টা চলছে...");
+    download.style.cssText = `
+      display: block;
+      width: 100%;
+      margin-top: 14px;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: #16a34a;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    `;
 
-    // Get the generated image
-    const response = await fetch(resultURL);
-    if (!response.ok) {
-      throw new Error("ছবিটি লোড করা যায়নি");
-    }
-
-    const imageBlob = await response.blob();
-    const file = new File(
-      [imageBlob],
-      "cb8-remover.png",
-      { type: "image/png" }
-    );
-
-    // Try sharing/saving through Android's share menu
-    if (
-      navigator.share &&
-      navigator.canShare &&
-      navigator.canShare({ files: [file] })
-    ) {
-      await navigator.share({
-        files: [file],
-        title: "CB8 Remover AI",
-        text: "Background removed PNG"
-      });
-
-      showStatus("শেয়ার মেনু খুলেছে। Save বা Download অপশন থাকলে সেটি বেছে নাও।");
-      return;
-    }
-
-    // Browser download fallback
-    const blobURL = URL.createObjectURL(imageBlob);
-    const link = document.createElement("a");
-
-    link.href = blobURL;
-    link.download = "cb8-remover.png";
-    link.style.display = "none";
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    showStatus(
-      "ডাউনলোডের চেষ্টা করা হয়েছে। না হলে ছবিটি নতুন ট্যাবে খুলে Save Image করো।"
-    );
-
-    setTimeout(() => URL.revokeObjectURL(blobURL), 60000);
-
-  } catch (error) {
-    if (error.name === "AbortError") {
-      showStatus("শেয়ার বাতিল হয়েছে। আবার ডাউনলোড বাটনে চাপ দাও।");
-    } else {
-      // Open the generated image if download/share is blocked
-      try {
-        const newTab = window.open(resultURL, "_blank");
-
-        if (newTab) {
-          showStatus("ছবিটি নতুন ট্যাবে খোলো, তারপর Save Image চেষ্টা করো।");
-        } else {
-          showStatus("Telegram ডাউনলোড বন্ধ করেছে। Chrome-এ Mini App খুলে চেষ্টা করো।");
-        }
-      } catch {
-        showStatus("ডাউনলোড হচ্ছে না। Chrome ব্রাউজারে খুলে আবার চেষ্টা করো।");
+    download.addEventListener("click", function () {
+      if (!resultURL) {
+        showStatus("আগে ছবিটি তৈরি করো, তারপর ডাউনলোড করো।");
+        return;
       }
-    }
-  }
-});
 
-button.insertAdjacentElement("afterend", download);
-showStatus("ছবি তৈরি হয়েছে! সবুজ বাটনে চাপ দিয়ে PNG সেভ করো।");
+      try {
+        const link = document.createElement("a");
+        link.href = resultURL;
+        link.download = "cb8-remover.png";
+        link.style.display = "none";
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        showStatus("PNG ডাউনলোডের চেষ্টা করা হয়েছে।");
+      } catch (error) {
+        showStatus("ডাউনলোড ব্যর্থ হয়েছে। Chrome ব্রাউজারে চেষ্টা করো।");
+      }
+    });
+
+    button.insertAdjacentElement("afterend", download);
+    showStatus("ছবি তৈরি হয়েছে! সবুজ বাটনে চাপ দিয়ে PNG ডাউনলোড করো।");
+);
 
 
   }catch(error){
