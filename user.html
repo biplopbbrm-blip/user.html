@@ -26,13 +26,13 @@ h1 span{background:linear-gradient(90deg,#c084fc,#60a5fa);-webkit-background-cli
 .card{padding:18px;border:1px solid #ffffff20;border-radius:25px;background:linear-gradient(145deg,#ffffff12,#ffffff05);box-shadow:0 20px 55px #00000025}
 .section-title{font-size:15px;font-weight:700;margin-bottom:15px}
 .upload{min-height:245px;padding:25px 15px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:1.5px dashed #9670ff;border-radius:21px;background:#8b5cf618;cursor:pointer}
-.upload-icon{width:70px;height:70px;display:grid;place-items:center;border-radius:22px;background:linear-gradient(135deg,#7546d9,#315cc9);margin-bottom:19px}
+.upload-icon{width:70px;height:70px;display:grid;place-items:center;border-radius:22px;background:linear-gradient(135deg,#7546d9,#315cc9);margin-bottom:19px;font-size:28px}
 .upload-title{font-size:18px;font-weight:700}
 .upload-desc{font-size:13px;color:#bdb5d8;margin-top:9px}
 .browse-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:19px;padding:12px 22px;border-radius:12px;background:linear-gradient(100deg,#8b5cf6,#4778f5);color:white;font-size:14px;font-weight:700}
 .upload-hint{font-size:11px;color:#aaa2c8;margin-top:16px}
 .upload-hint span{color:#a78bfa;padding:0 4px}
-#photo{position:absolute;width:1px;height:1px;opacity:0}
+#photo{position:absolute;width:1px;height:1px;opacity:0.01}
 #preview{display:none;margin-top:18px}
 .preview-frame{padding:10px;border:1px solid #ffffff18;border-radius:16px;background:#ffffff08}
 #image{display:block;width:100%;max-height:330px;object-fit:contain;border-radius:10px;background-color:#eee}
@@ -40,6 +40,7 @@ h1 span{background:linear-gradient(90deg,#c084fc,#60a5fa);-webkit-background-cli
 .primary-btn{display:block;width:100%;padding:16px;margin-top:18px;border:0;border-radius:14px;background:linear-gradient(100deg,#9333ea,#3b82f6);color:white;font-size:15px;font-weight:800;cursor:pointer}
 .primary-btn:disabled{opacity:.5;cursor:not-allowed}
 #status{display:none;margin-top:14px;padding:12px;border-radius:12px;background:#ffffff08;color:#d8d0f5;font-size:12px;line-height:1.6;overflow-wrap:anywhere}
+#download-result{display:none;width:100%;margin-top:14px;padding:15px;border:0;border-radius:12px;background:#16a34a;color:white;font-size:16px;font-weight:bold;cursor:pointer}
 .features{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
 .feature{padding:17px;border-radius:18px;border:1px solid #ffffff15;background:#ffffff08}
 .feature-icon{font-size:23px;margin-bottom:12px}
@@ -63,6 +64,7 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
 
 <section class="card">
 <div class="section-title">Start with your image</div>
+
 <label class="upload" for="photo">
 <div class="upload-icon">🖼️</div>
 <strong class="upload-title">Upload Your Image</strong>
@@ -70,6 +72,7 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
 <span class="browse-btn">＋ Choose Image</span>
 <small class="upload-hint">JPG, PNG or WEBP <span>·</span> Max 10 MB</small>
 </label>
+
 <input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
 
 <div id="preview">
@@ -78,6 +81,7 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
 </div>
 
 <button class="primary-btn" id="remove" disabled>✨ Remove Background</button>
+<button id="download-result" type="button">⬇ Download Transparent PNG</button>
 <div id="status" role="status" aria-live="polite"></div>
 </section>
 
@@ -104,6 +108,7 @@ const image=document.getElementById("image");
 const filename=document.getElementById("filename");
 const button=document.getElementById("remove");
 const statusBox=document.getElementById("status");
+const download=document.getElementById("download-result");
 
 let file=null;
 let previewURL=null;
@@ -115,10 +120,11 @@ function showStatus(message){
 }
 
 function clearResult(){
-  if(resultURL)URL.revokeObjectURL(resultURL);
-  resultURL=null;
-  const old=document.getElementById("download-result");
-  if(old)old.remove();
+  if(resultURL){
+    URL.revokeObjectURL(resultURL);
+    resultURL=null;
+  }
+  download.style.display="none";
 }
 
 picker.addEventListener("change",()=>{
@@ -142,12 +148,15 @@ picker.addEventListener("change",()=>{
   }
 
   file=chosen;
+
   if(previewURL)URL.revokeObjectURL(previewURL);
   previewURL=URL.createObjectURL(file);
+
   image.src=previewURL;
   filename.textContent=file.name;
   preview.style.display="block";
   button.disabled=false;
+
   showStatus("Image selected. Ready to process.");
 });
 
@@ -181,71 +190,44 @@ button.addEventListener("click",async()=>{
     }
 
     const blob=await response.blob();
+
     if(!blob.type.startsWith("image/")){
       throw new Error("Server did not return an image. Check backend settings.");
     }
 
-    resultURL = URL.createObjectURL(blob);
-image.src = resultURL;
-filename.textContent = "Background removed successfully!";
+    resultURL=URL.createObjectURL(blob);
+    image.src=resultURL;
+    filename.textContent="Background removed successfully!";
+    download.style.display="block";
 
-// Remove old download button if it exists
-const oldDownload = document.getElementById("download-result");
-if (oldDownload) oldDownload.remove();
-
-
-    // Create direct download button
-    const download = document.createElement("button");
-    download.id = "download-result";
-    download.type = "button";
-    download.textContent = "⬇ Download Transparent PNG";
-
-    download.style.cssText = `
-      display: block;
-      width: 100%;
-      margin-top: 14px;
-      padding: 15px;
-      border: none;
-      border-radius: 12px;
-      background: #16a34a;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    `;
-
-    download.addEventListener("click", function () {
-      if (!resultURL) {
-        showStatus("আগে ছবিটি তৈরি করো, তারপর ডাউনলোড করো।");
-        return;
-      }
-
-      try {
-        const link = document.createElement("a");
-        link.href = resultURL;
-        link.download = "cb8-remover.png";
-        link.style.display = "none";
-
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-
-        showStatus("PNG ডাউনলোডের চেষ্টা করা হয়েছে।");
-      } catch (error) {
-        showStatus("ডাউনলোড ব্যর্থ হয়েছে। Chrome ব্রাউজারে চেষ্টা করো।");
-      }
-    });
-
-    button.insertAdjacentElement("afterend", download);
-    showStatus("ছবি তৈরি হয়েছে! সবুজ বাটনে চাপ দিয়ে PNG ডাউনলোড করো।");
-);
-
+    showStatus("ছবি তৈরি হয়েছে! সবুজ বাটনে চাপ দিয়ে PNG ডাউনলোড করো.");
 
   }catch(error){
-    showStatus("Background removal failed: "+error.message+". Check the Render service and API key. If the message mentions Failed to fetch, check server CORS or availability.");
+    showStatus("Background removal failed: "+error.message+". Check that the server is available.");
   }finally{
     button.disabled=!file;
     button.textContent="✨ Remove Background";
+  }
+});
+
+download.addEventListener("click",()=>{
+  if(!resultURL){
+    showStatus("আগে একটি ছবি আপলোড করে Background Remove করো।");
+    return;
+  }
+
+  try{
+    const link=document.createElement("a");
+    link.href=resultURL;
+    link.download="cb8-remover.png";
+    link.style.display="none";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    showStatus("PNG ডাউনলোডের চেষ্টা করা হয়েছে। Telegram-এ কাজ না করলে Chrome-এ খুলে চেষ্টা করো.");
+  }catch(error){
+    showStatus("ডাউনলোড ব্যর্থ হয়েছে। Chrome ব্রাউজারে চেষ্টা করো.");
   }
 });
 </script>
