@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,6 +40,7 @@ h1 span{background:linear-gradient(90deg,#c084fc,#60a5fa);-webkit-background-cli
 .primary-btn{display:block;width:100%;padding:16px;margin-top:18px;border:0;border-radius:14px;background:linear-gradient(100deg,#9333ea,#3b82f6);color:white;font-size:15px;font-weight:800;cursor:pointer}
 .primary-btn:disabled{opacity:.5;cursor:not-allowed}
 #download-result{display:none;width:100%;margin-top:14px;padding:15px;border:0;border-radius:12px;background:#16a34a;color:white;font-size:16px;font-weight:bold;cursor:pointer}
+#download-result:disabled{opacity:.6}
 #status{display:none;margin-top:14px;padding:12px;border-radius:12px;background:#ffffff08;color:#d8d0f5;font-size:12px;line-height:1.6;overflow-wrap:anywhere}
 .features{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
 .feature{padding:17px;border-radius:18px;border:1px solid #ffffff15;background:#ffffff08}
@@ -79,7 +81,7 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
 
   <div id="preview">
     <div class="preview-frame">
-      <img id="image" alt="Selected image preview">
+      <img id="image" alt="Image preview">
     </div>
     <div id="filename"></div>
   </div>
@@ -101,227 +103,237 @@ footer{text-align:center;margin-top:27px;color:#8983a7;font-size:11px}
 
 <script>
 (function(){
-  if(window.Telegram && window.Telegram.WebApp){
-    window.Telegram.WebApp.ready();
-    window.Telegram.WebApp.expand();
+  const tg = window.Telegram && window.Telegram.WebApp
+    ? window.Telegram.WebApp
+    : null;
+
+  if(tg){
+    tg.ready();
+    tg.expand();
   }
 
-  const API_URL="https://cb8-remover-backend-1.onrender.com/remove-bg";
-  const picker=document.getElementById("photo");
-  const preview=document.getElementById("preview");
-  const image=document.getElementById("image");
-  const filename=document.getElementById("filename");
-  const button=document.getElementById("remove");
-  const statusBox=document.getElementById("status");
-  const download=document.getElementById("download-result");
+  const API_URL = "https://cb8-remover-backend-1.onrender.com/remove-bg";
+  const picker = document.getElementById("photo");
+  const preview = document.getElementById("preview");
+  const image = document.getElementById("image");
+  const filename = document.getElementById("filename");
+  const button = document.getElementById("remove");
+  const statusBox = document.getElementById("status");
+  const download = document.getElementById("download-result");
 
-  let file=null;
-  let resultBlob=null;
-  let resultURL=null;
-  let busy=false;
-  let selectionId=0;
+  let file = null;
+  let downloadURL = null;
+  let previewURL = null;
+  let busy = false;
+  let selectionId = 0;
 
   function showStatus(message){
-    statusBox.style.display="block";
-    statusBox.textContent=message;
+    statusBox.style.display = "block";
+    statusBox.textContent = message;
   }
 
   function clearResult(){
-    if(resultURL){
-      URL.revokeObjectURL(resultURL);
-      resultURL=null;
-    }
-    resultBlob=null;
-    download.style.display="none";
+    downloadURL = null;
+    previewURL = null;
+    download.style.display = "none";
   }
 
-  picker.addEventListener("change",function(){
-    const chosen=picker.files && picker.files[0];
-    if(!chosen)return;
+  picker.addEventListener("change", function(){
+    const chosen = picker.files && picker.files[0];
+    if(!chosen) return;
 
-    const currentId=++selectionId;
+    const currentId = ++selectionId;
     clearResult();
 
-    const allowed=["image/jpeg","image/png","image/webp"];
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+
     if(!allowed.includes(chosen.type)){
-      file=null;
-      button.disabled=true;
+      file = null;
+      button.disabled = true;
       showStatus("Please choose a JPG, PNG or WEBP image.");
       return;
     }
 
-    if(chosen.size>10*1024*1024){
-      file=null;
-      button.disabled=true;
+    if(chosen.size > 10 * 1024 * 1024){
+      file = null;
+      button.disabled = true;
       showStatus("Image must be 10 MB or smaller.");
       return;
     }
 
-    file=chosen;
-    button.disabled=true;
+    file = chosen;
+    button.disabled = true;
     showStatus("ছবিটি পড়া হচ্ছে, একটু অপেক্ষা করো...");
 
-    const reader=new FileReader();
+    const reader = new FileReader();
 
-    reader.onload=function(event){
-      if(currentId!==selectionId)return;
+    reader.onload = function(event){
+      if(currentId !== selectionId) return;
 
-      const dataURL=event.target.result;
-      if(typeof dataURL!=="string"){
-        file=null;
-        button.disabled=true;
+      const dataURL = event.target.result;
+
+      if(typeof dataURL !== "string"){
+        file = null;
+        button.disabled = true;
         showStatus("ছবিটি পড়া যায়নি। আবার ছবি বেছে নাও।");
         return;
       }
 
-      image.onload=function(){
-        if(currentId!==selectionId)return;
-        preview.style.display="block";
-        filename.textContent=chosen.name;
-        button.disabled=false;
+      image.onload = function(){
+        if(currentId !== selectionId) return;
+        preview.style.display = "block";
+        filename.textContent = chosen.name;
+        button.disabled = false;
         showStatus("ছবি নির্বাচন হয়েছে। এখন Remove Background চাপো।");
       };
 
-      image.onerror=function(){
-        if(currentId!==selectionId)return;
-        file=null;
-        button.disabled=true;
-        showStatus("ছবির প্রিভিউ খোলা যায়নি। JPG বা PNG ছবি দিয়ে চেষ্টা করো।");
+      image.onerror = function(){
+        if(currentId !== selectionId) return;
+        file = null;
+        button.disabled = true;
+        showStatus("ছবির প্রিভিউ খোলা যায়নি। অন্য ছবি দিয়ে চেষ্টা করো।");
       };
 
-      image.src=dataURL;
+      image.src = dataURL;
     };
 
-    reader.onerror=function(){
-      if(currentId!==selectionId)return;
-      file=null;
-      button.disabled=true;
+    reader.onerror = function(){
+      if(currentId !== selectionId) return;
+      file = null;
+      button.disabled = true;
       showStatus("ফোন থেকে ছবিটি পড়া যায়নি। আবার ছবি বেছে নাও।");
     };
 
     reader.readAsDataURL(chosen);
   });
 
-  button.addEventListener("click",async function(){
-    if(busy)return;
+  button.addEventListener("click", async function(){
+    if(busy) return;
 
     if(!file){
       showStatus("আগে Choose Image চাপ দিয়ে একটি ছবি বেছে নাও।");
       return;
     }
 
-    const fileToProcess=file;
+    const fileToProcess = file;
     clearResult();
-    busy=true;
-    button.disabled=true;
-    button.textContent="⏳ Processing...";
+
+    busy = true;
+    button.disabled = true;
+    button.textContent = "⏳ Processing...";
     showStatus("Background removal চলছে। অপেক্ষা করো...");
 
     try{
-      const formData=new FormData();
-      formData.append("image",fileToProcess,fileToProcess.name);
+      const formData = new FormData();
+      formData.append("image", fileToProcess, fileToProcess.name);
 
-      const response=await fetch(API_URL,{
-        method:"POST",
-        body:formData
+      const response = await fetch(API_URL, {
+        method: "POST",
+        body: formData
       });
 
+      let data;
+
+      try{
+        data = await response.json();
+      }catch(e){
+        throw new Error("সার্ভার থেকে সঠিক উত্তর আসেনি। Backend deploy পরীক্ষা করো।");
+      }
+
       if(!response.ok){
-        let details="";
-        try{
-          const data=await response.json();
-          details=data.error||data.message||"";
-        }catch(e){}
-        throw new Error(details||("Server returned error "+response.status));
+        throw new Error(data.error || data.message || ("Server error " + response.status));
       }
 
-      const blob=await response.blob();
-
-      if(!blob.type.startsWith("image/")){
-        throw new Error("Server did not return an image. Check backend settings.");
+      if(!data.success || !data.download_url || !data.preview_url){
+        throw new Error(data.error || "ডাউনলোড লিংক তৈরি হয়নি।");
       }
 
-      resultBlob=blob;
-      resultURL=URL.createObjectURL(blob);
+      // The updated backend returns HTTPS URLs, not image blobs.
+      downloadURL = data.download_url;
+      previewURL = data.preview_url;
 
-      const reader=new FileReader();
-
-      reader.onload=function(event){
-        image.onload=function(){
-          filename.textContent="Background removed successfully!";
-          preview.style.display="block";
-          download.style.display="block";
-          showStatus("ছবি তৈরি হয়েছে! সবুজ বাটনে চাপ দিয়ে PNG ডাউনলোড করো।");
-        };
-
-        image.onerror=function(){
-          showStatus("ছবি তৈরি হয়েছে, কিন্তু প্রিভিউ দেখানো যায়নি। ডাউনলোড চেষ্টা করো।");
-          download.style.display="block";
-        };
-
-        image.src=event.target.result;
+      image.onload = function(){
+        preview.style.display = "block";
+        filename.textContent = "Background removed successfully!";
+        download.style.display = "block";
+        download.disabled = false;
+        showStatus("ছবি তৈরি হয়েছে! সবুজ বাটনে চাপ দিয়ে PNG ডাউনলোড করো।");
       };
 
-      reader.onerror=function(){
-        image.src=resultURL;
-        filename.textContent="Background removed successfully!";
-        download.style.display="block";
-        showStatus("ছবি তৈরি হয়েছে। সবুজ বাটনে চাপ দিয়ে ডাউনলোড করো।");
+      image.onerror = function(){
+        preview.style.display = "block";
+        filename.textContent = "Background removed successfully!";
+        download.style.display = "block";
+        download.disabled = false;
+        showStatus("ছবি তৈরি হয়েছে, কিন্তু প্রিভিউ দেখা যাচ্ছে না। ডাউনলোড চেষ্টা করো।");
       };
 
-      reader.readAsDataURL(blob);
+      image.src = previewURL;
 
     }catch(error){
-      showStatus("Background removal failed: "+error.message+". সার্ভার চালু আছে কি না পরীক্ষা করো।");
+      clearResult();
+      showStatus("Background removal failed: " + error.message);
     }finally{
-      busy=false;
-      button.disabled=!file;
-      button.textContent="✨ Remove Background";
+      busy = false;
+      button.disabled = !file;
+      button.textContent = "✨ Remove Background";
     }
   });
 
-  // Download: save the actual image blob, not a data URL.
-  download.addEventListener("click",function(){
-    if(!resultBlob){
+  download.addEventListener("click", function(){
+    if(!downloadURL){
       showStatus("আগে একটি ছবি আপলোড করে Remove Background করো।");
       return;
     }
 
-    const pngBlob=resultBlob;
-    const fileName="cb8-remover.png";
+    const fileName = "cb8-remover.png";
 
-    // Ensure the downloaded file has a PNG MIME type.
-    const saveBlob = pngBlob.type==="image/png"
-      ? pngBlob
-      : new Blob([pngBlob],{type:"image/png"});
+    // Use Telegram's native download feature when available.
+    if(tg && typeof tg.downloadFile === "function"){
+      try{
+        download.disabled = true;
+        showStatus("Telegram-এর ডাউনলোড ব্যবস্থা চালু হচ্ছে...");
 
-    const objectURL=URL.createObjectURL(saveBlob);
-    const link=document.createElement("a");
+        tg.downloadFile({
+          url: downloadURL,
+          file_name: fileName
+        }, function(status){
+          download.disabled = false;
 
-    link.href=objectURL;
-    link.download=fileName;
-    link.setAttribute("type","application/octet-stream");
-    link.style.position="fixed";
-    link.style.left="-9999px";
+          if(status === "downloading"){
+            showStatus("ডাউনলোড শুরু হয়েছে। ফোনের Downloads ফোল্ডারে ফাইলটি দেখো।");
+          }else if(status === "cancelled"){
+            showStatus("ডাউনলোড বাতিল করা হয়েছে। আবার সবুজ বাটনে চাপতে পারো।");
+          }else{
+            showStatus("ডাউনলোডের অবস্থা নিশ্চিত করা যায়নি। আবার চেষ্টা করো।");
+          }
+        });
 
+        return;
+      }catch(error){
+        download.disabled = false;
+        showStatus("Telegram-এর ডাউনলোড চালু হয়নি। সরাসরি লিংক খুলে চেষ্টা করছি...");
+      }
+    }
+
+    // Browser fallback: the backend responds with Content-Disposition: attachment.
+    const link = document.createElement("a");
+    link.href = downloadURL;
+    link.download = fileName;
+    link.target = "_blank";
+    link.rel = "noopener";
     document.body.appendChild(link);
 
     try{
       link.click();
-      showStatus(
-        "ডাউনলোডের অনুরোধ পাঠানো হয়েছে। ফাইলটি ফোনের Downloads ফোল্ডারে আছে কি না দেখো। " +
-        "Telegram-এর ভেতরে ডাউনলোড না হলে এই পেজটি Chrome-এ খুলে আবার চেষ্টা করো।"
-      );
+      showStatus("ডাউনলোড লিংক খোলা হয়েছে। ডাউনলোড শুরু না হলে খোলা পেজে ফাইলটি সেভ করো।");
     }catch(error){
-      showStatus(
-        "ডাউনলোড শুরু করা যায়নি। Chrome-এ পেজটি খুলে আবার চেষ্টা করো।"
-      );
+      showStatus("ডাউনলোড শুরু করা যায়নি। লিংকটি আবার খোলার চেষ্টা করো।");
     }
 
     setTimeout(function(){
       link.remove();
-      URL.revokeObjectURL(objectURL);
-    },60000);
+    }, 2000);
   });
 })();
 </script>
