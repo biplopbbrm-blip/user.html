@@ -185,47 +185,107 @@ button.addEventListener("click",async()=>{
       throw new Error("Server did not return an image. Check backend settings.");
     }
 
-    resultURL=URL.createObjectURL(blob);
-    image.src=resultURL;
-    filename.textContent="Background removed successfully!";
+    resultURL = URL.createObjectURL(blob);
+image.src = resultURL;
+filename.textContent = "Background removed successfully!";
 
-    
+// Remove old download button if it exists
+const oldDownload = document.getElementById("download-result");
+if (oldDownload) oldDownload.remove();
 
-const download = document.createElement("a");
+// Create download button
+const download = document.createElement("button");
 download.id = "download-result";
-download.href = resultURL;
-download.download = "cb8-remover.png";
+download.type = "button";
 download.textContent = "⬇ Download Transparent PNG";
-download.style.cssText = "display:block;text-align:center;margin-top:14px;padding:15px;border-radius:12px;background:#16a34a;color:white;font-weight:bold;text-decoration:none;";
 
-download.addEventListener("click", async function (event) {
-  event.preventDefault();
+download.style.cssText = `
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  background: #16a34a;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+`;
 
+download.addEventListener("click", async function () {
   try {
+    showStatus("ছবি ডাউনলোড করার চেষ্টা চলছে...");
+
+    // Get the generated image
     const response = await fetch(resultURL);
-    if (!response.ok) throw new Error("Could not load image");
+    if (!response.ok) {
+      throw new Error("ছবিটি লোড করা যায়নি");
+    }
 
-    const blob = await response.blob();
-    const blobURL = URL.createObjectURL(blob);
+    const imageBlob = await response.blob();
+    const file = new File(
+      [imageBlob],
+      "cb8-remover.png",
+      { type: "image/png" }
+    );
 
+    // Try sharing/saving through Android's share menu
+    if (
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare({ files: [file] })
+    ) {
+      await navigator.share({
+        files: [file],
+        title: "CB8 Remover AI",
+        text: "Background removed PNG"
+      });
+
+      showStatus("শেয়ার মেনু খুলেছে। Save বা Download অপশন থাকলে সেটি বেছে নাও।");
+      return;
+    }
+
+    // Browser download fallback
+    const blobURL = URL.createObjectURL(imageBlob);
     const link = document.createElement("a");
+
     link.href = blobURL;
     link.download = "cb8-remover.png";
-    link.target = "_blank";
+    link.style.display = "none";
+
     document.body.appendChild(link);
     link.click();
     link.remove();
 
-    showStatus("ছবিটি তৈরি হয়েছে। ডাউনলোড না হলে ছবিটি নতুন ট্যাবে খোলার চেষ্টা করো।");
+    showStatus(
+      "ডাউনলোডের চেষ্টা করা হয়েছে। না হলে ছবিটি নতুন ট্যাবে খুলে Save Image করো।"
+    );
 
     setTimeout(() => URL.revokeObjectURL(blobURL), 60000);
+
   } catch (error) {
-    showStatus("ডাউনলোড ব্যর্থ হয়েছে। ছবিটি আবার তৈরি করে চেষ্টা করো।");
+    if (error.name === "AbortError") {
+      showStatus("শেয়ার বাতিল হয়েছে। আবার ডাউনলোড বাটনে চাপ দাও।");
+    } else {
+      // Open the generated image if download/share is blocked
+      try {
+        const newTab = window.open(resultURL, "_blank");
+
+        if (newTab) {
+          showStatus("ছবিটি নতুন ট্যাবে খোলো, তারপর Save Image চেষ্টা করো।");
+        } else {
+          showStatus("Telegram ডাউনলোড বন্ধ করেছে। Chrome-এ Mini App খুলে চেষ্টা করো।");
+        }
+      } catch {
+        showStatus("ডাউনলোড হচ্ছে না। Chrome ব্রাউজারে খুলে আবার চেষ্টা করো।");
+      }
+    }
   }
 });
 
 button.insertAdjacentElement("afterend", download);
-showStatus("Success! Tap the green button to download your PNG.");
+showStatus("ছবি তৈরি হয়েছে! সবুজ বাটনে চাপ দিয়ে PNG সেভ করো।");
 
 
   }catch(error){
